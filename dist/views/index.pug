@@ -3,3 +3,40 @@ html
     title= title
   body
     h1= message
+    <form action="https://onyen.unc.edu/cgi-bin/unc_id/authenticator.pl" name="form1" method="POST">
+    
+        <input type="hidden" name="cookie" value="123-bc-398z-45">
+
+        <!-- 'title' is special; it will be used on the authenticator page. -->
+        <input type="hidden" name="title" value="Authenticator Demo">
+
+        <!-- pick a background image -->
+        <input type="hidden" name="backgroundimage" value="">
+
+        <!-- pick a Casscading Style Sheet -->
+        <input type="hidden" name="csslink" value="">
+
+        <!-- pick a background color -->
+        <input type="hidden" name="backgroundcolor" value="">
+
+        <!-- Do we want to get the PID for this person? -->
+        <input type="hidden" name="getpid" value="0">
+
+        <input type="hidden" name="targetpass" value="https://onyen.unc.edu/cgi-bin/unc_id/authenticator.pl">
+
+        <input type="hidden" name="textpass" value="Congratulations. Select your favorite color.">
+
+        <input type="hidden" name="buttonlistpass" value="Red,Green,Blue">
+
+        <input type="hidden" name="locationfailtimeout" value="https://onyen.unc.edu/cgi-bin/unc_id/authenticator.pl">
+
+        <input type="hidden" name="targetfail" value="https://onyen.unc.edu/cgi-bin/unc_id/authenticator.pl">
+
+        <input type="hidden" name="textfail" value="Duh, you failed! Now what will you do?.">
+
+        <input type="hidden" name="buttonlistfail" value="Beg,Grovel,Whine">
+
+        <center>
+            <input type="submit" name="submit" value="Authenticate">
+        </center>
+    </form>

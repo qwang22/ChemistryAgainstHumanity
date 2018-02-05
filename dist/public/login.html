@@ -1,0 +1,72 @@
+<html>
+
+<head></head>
+
+<body>
+    <form type="hidden" action="https://onyen.unc.edu/cgi-bin/unc_id/authenticator.pl" name="form1" method="POST">
+        <!-- There's nothing special about 'cookie'; it will be returned to the
+        eventual target URL for whatever purposes you like. -->
+        <input type="hidden" name="cookie" value="123-bc-398z-45">
+
+        <!-- 'title' is special; it will be used on the authenticator page. -->
+        <input type="hidden" name="title" value="Authenticator Demo">
+
+        <!-- pick a background image -->
+        <input type="hidden" name="backgroundimage" value="">
+
+        <!-- pick a Casscading Style Sheet -->
+        <input type="hidden" name="csslink" value="">
+
+        <!-- pick a background color -->
+        <input type="hidden" name="backgroundcolor" value="">
+
+        <!-- Do we want to get the PID for this person? -->
+        <input type="hidden" name="getpid" value="0">
+
+        <!-- successful authentications use these values. -->
+        <!-- could say "<input type="hidden"
+                               name="locationpass"
+                               value="http://peace.and.joy/cgi-bin/winners">",
+             instead of using a targetpass, but we won't... -->
+
+        <input type="hidden" name="targetpass" value="https://onyen.unc.edu/cgi-bin/unc_id/authenticator.pl">
+        <!-- ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+                       Note: This would be the URL that successful authentications
+                       would be directed to. In this demo it goes back to onyen.unc.edu
+                       because onyen.unc.edu is acting as both the authenticator
+                       host and the remote web site. -->
+
+        <input type="hidden" name="textpass" value="Congratulations. Select your favorite color.">
+
+        <input type="hidden" name="buttonlistpass" value="Red,Green,Blue">
+
+        <!-- unsuccessful authentications use these values -->
+        <!-- could say "<input type="hidden"
+                               name="locationfail"
+                               value="http://place.of.doom/cgi-bin/loosers">",
+             instead of using a targetfail, but we won't... -->
+
+        <input type="hidden" name="locationfailtimeout" value="https://onyen.unc.edu/cgi-bin/unc_id/authenticator.pl">
+        <!-- ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+                       Note: This would be the URL for attempts that took too long.
+                       It goes back to onyen.unc.edu in this case
+                       because onyen.unc.edu is acting as both the authenticator
+                       host and the remote web site. -->
+
+        <input type="hidden" name="targetfail" value="https://onyen.unc.edu/cgi-bin/unc_id/authenticator.pl">
+        <!-- ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+                       Note: This would be the URL that unsuccessful authentications
+                       would be directed to. It goes back to onyen.unc.edu
+                       because onyen.unc.edu is acting as both the authenticator
+                       host and the remote web site. -->
+
+        <input type="hidden" name="textfail" value="Duh, you failed! Now what will you do?.">
+
+        <input type="hidden" name="buttonlistfail" value="Beg,Grovel,Whine">
+
+        <center>
+            <input type="submit" name="submit" value="Authenticate">
+        </center>
+    </form>
+</body>
+</html>
