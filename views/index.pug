@@ -22,19 +22,15 @@ html
         <!-- Do we want to get the PID for this person? -->
         <input type="hidden" name="getpid" value="0">
 
-        <input type="hidden" name="targetpass" value="https://onyen.unc.edu/cgi-bin/unc_id/authenticator.pl">
-
-        <input type="hidden" name="textpass" value="Congratulations. Select your favorite color.">
-
-        <input type="hidden" name="buttonlistpass" value="Red,Green,Blue">
+        <input type="hidden" name="targetpass" value="https://localhost:8080/login">
+        
+        <input type="hidden" name="textpass" value="Login success. Click continue below to return back to the Chemistry Against Humanity Website.">
 
         <input type="hidden" name="locationfailtimeout" value="https://onyen.unc.edu/cgi-bin/unc_id/authenticator.pl">
 
-        <input type="hidden" name="targetfail" value="https://onyen.unc.edu/cgi-bin/unc_id/authenticator.pl">
+        <input type="hidden" name="targetfail" value="https://localhost:8080">
 
-        <input type="hidden" name="textfail" value="Duh, you failed! Now what will you do?.">
-
-        <input type="hidden" name="buttonlistfail" value="Beg,Grovel,Whine">
+        <input type="hidden" name="textfail" value="Login failed. Your password or ONYEN were wrong. Go back and try logging in again.">
 
         <center>
             <input type="submit" name="submit" value="Authenticate">

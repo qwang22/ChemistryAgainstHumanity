@@ -1,5 +1,6 @@
 import { NextFunction, Request, Response, Router } from "express";
 import { BaseRoute } from "./route";
+const https = require("https");
 
 
 /**
@@ -17,12 +18,21 @@ export class IndexRoute extends BaseRoute {
      * @static
      */
     public static create(router: Router) {
-        //log
+        // log
         console.log("[IndexRoute::create] Creating index route.");
 
-        //add home page route
+        // add home page route
         router.get("/", (req: Request, res: Response, next: NextFunction) => {
             new IndexRoute().index(req, res, next);
+        });
+
+        // we will post to the root if we have a login fail
+        router.post("/", (req: Request, res: Response, next: NextFunction) => {
+            new IndexRoute().index(req, res, next);
+        });
+
+        router.post("/login", (req: Request, res: Response, next: NextFunction) => {
+            new IndexRoute().login(req, res, next);
         });
     }
 
@@ -56,5 +66,23 @@ export class IndexRoute extends BaseRoute {
 
         // render template
         this.render(req, res, "index", options);
+    }
+
+
+    public login(req: Request, res: Response, next: NextFunction) {
+        // set custom title
+        this.title = "Login";
+        // console.log(req);
+
+        let options: any = {};
+
+        if (req.body.status === "pass") {
+           options.status = "pass";
+        } else {
+            options.status = "fail";
+        }
+
+        // render template
+        this.render(req, res, "login", options);
     }
 }
