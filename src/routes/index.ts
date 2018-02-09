@@ -34,6 +34,16 @@ export class IndexRoute extends BaseRoute {
         router.post("/login", (req: Request, res: Response, next: NextFunction) => {
             new IndexRoute().login(req, res, next);
         });
+        
+        //add admin page to import reactions and get depictions
+        router.get("/admin", (req: Request, res: Response, next: NextFunction) => {
+            new IndexRoute().admin(req, res, next);
+        });
+
+        // handles ajax request to get depictions
+        router.post("/getImage", (req: Request, res: Response, next: NextFunction) => {
+            new IndexRoute().getImage(req, res, next);
+        });
     }
 
     /**
@@ -84,5 +94,35 @@ export class IndexRoute extends BaseRoute {
 
         // render template
         this.render(req, res, "login", options);
+    }
+    
+    public admin(req: Request, res: Response, next: NextFunction) {
+
+        let options: Object = {
+            "title" : "Admin page to input chemical reactions"
+        }
+
+        this.render(req, res, "admin", options);
+    }
+
+    public getImage(req: Request, res: Response, next: NextFunction) {
+
+        // req.body = {"chem1":chemName, "chem2": chemName, "chem3": chemName} 
+        
+        var json_obj = {};
+
+        // loop that sets json_obj = {chem1: img_url1, chem2: img_url2, chem3: img_url3}
+        var src_urls = Object.keys(req.body).map(function(key) {
+            var chem = req.body[key];
+            var encoded = encodeURIComponent(chem);
+            var imgURL = "http://opsin.ch.cam.ac.uk/opsin/" + encoded + ".png"
+            json_obj[key] = imgURL;
+        });
+
+        var response = JSON.stringify(json_obj);
+
+        console.log("response = " + response);
+
+        res.send(response);
     }
 }
