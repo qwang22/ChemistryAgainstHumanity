@@ -44,6 +44,10 @@ export class IndexRoute extends BaseRoute {
         router.post("/getImage", (req: Request, res: Response, next: NextFunction) => {
             new IndexRoute().getImage(req, res, next);
         });
+        
+        router.get("/game", (req: Request, res: Response, next: NextFunction) => {
+            new IndexRoute().game(req, res, next);
+        });
     }
 
     
@@ -125,5 +129,12 @@ export class IndexRoute extends BaseRoute {
         console.log("response = " + response);
 
         res.send(response);
+    }
+    
+    public game(req: Request, res: Response, next: NextFunction) {
+        
+        let options: any = {};
+        
+        this.render(req, res, "game", options);
     }
 }
