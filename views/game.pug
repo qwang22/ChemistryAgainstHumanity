@@ -1,0 +1,70 @@
+html
+    head
+        style
+            include looks.css
+        script(src='https://code.jquery.com/jquery-latest.min.js')
+        script(type='text/javascript').
+            //$(document).ready(function() {
+
+                function allowDrop(ev) {
+                    ev.preventDefault();
+                }
+
+                function drag(ev) {
+                    ev.dataTransfer.setData("text", ev.target.id);
+                }
+
+                function drop(ev) {
+                    ev.preventDefault();
+                    var data = ev.dataTransfer.getData("text");
+                    ev.target.appendChild(document.getElementById(data));
+                }
+
+                document.getElementById('check').onclick = function() {
+                    document.getElementById('demo').innerHTML = "answer correct or incorrect";
+                }
+            //});
+    body
+        <div id='header'>
+            h2="Chem Against Humanity"
+            <p>Drag and drop the images from one box to the other</p>
+        </div>
+
+        <table id="div1" ondrop="drop(event)" ondragover="allowDrop(event)">
+            <tr>
+                <th><img src="http://opsin.ch.cam.ac.uk/opsin/butyric%20acid.png" alt="butyric acid" draggable="true" ondragstart="drag(event)" id="drag1"> </th>
+                <th><img src="http://opsin.ch.cam.ac.uk/opsin/thionyl%20chloride.png" alt="thionyl chloride" draggable="true" ondragstart="drag(event)" id="drag2"> </th>
+                <th>
+                    <img src="http://opsin.ch.cam.ac.uk/opsin/butyryl%20chloride.png" alt="butyryl chloride" draggable="true" ondragstart="drag(event)" id="drag3">
+                </th>
+            </tr>
+            <tr>
+                <th><img src="http://opsin.ch.cam.ac.uk/opsin/butyryl%20chloride.png" alt="butyryl chloride" draggable="true" ondragstart="drag(event)" id="drag4"> </th>
+                <th><img src="http://opsin.ch.cam.ac.uk/opsin/sodium%20methoxide.png" alt="sodium methoxide" draggable="true" ondragstart="drag(event)" id="drag5"> </th>
+                <th>
+                    <img src="http://opsin.ch.cam.ac.uk/opsin/methyl%20butyrate.png" alt="methyl butyrate" draggable="true" ondragstart="drag(event)" id="drag6">
+                </th>
+            </tr>
+
+            <tr>
+                <th><img src="http://opsin.ch.cam.ac.uk/opsin/1-butanol.png" alt="1-butanol" draggable="true" ondragstart="drag(event)" id="drag7"> </th>
+                <th><img src="http://opsin.ch.cam.ac.uk/opsin/pyridinium%20chlorochromate.png" alt="pyridinium chlorochromate" draggable="true" ondragstart="drag(event)" id="drag8"> </th>
+                <th>
+                    <img src="http://opsin.ch.cam.ac.uk/opsin/butyraldehyde.png" alt="butyraldehyde" draggable="true" ondragstart="drag(event)" id="drag9">
+                </th>
+
+            </tr>
+        </table>
+
+        <table id="div2" ondrop="drop(event)" ondragover="allowDrop(event)">
+
+            <tr>
+                <th> </th>
+                <th> </th>
+                <th> </th>
+            </tr>
+
+        </table>
+        <button id='check'>Submit</button>
+
+        <p id="demo"></p>
