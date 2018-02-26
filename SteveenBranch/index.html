@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="">
+
+<head>
+    <title>Touch Events</title>
+
+    <script src="set-game.js"></script>
+    <link href='http://fonts.googleapis.com/css?family=Bree+Serif|Merriweather' rel='stylesheet' type='text/css'>
+
+    <link rel="stylesheet" type="text/css" href="looks.css">
+</head>
+
+<body>
+
+    
+    <div id = "header">
+        <h2>Chem Against Humanity</h2>
+        <p>Drag and drop the images from one box to the other</p>
+    </div>
+
+
+
+
+    <table id="div1" ondrop="drop(event)" ondragover="allowDrop(event)">
+        <tr>
+            <th><img src="acetaldehyde.png" alt="Acetaldehyde" draggable="true" ondragstart="drag(event)" id="drag1"> </th>
+            <th><img src="aliphatic.png" alt="aliphatic" draggable="true" ondragstart="drag(event)" id="drag2"> </th>
+            <th>
+                <img src="Alkene.png" alt="Alkene" draggable="true" ondragstart="drag(event)" id="drag3">
+            </th>
+        </tr>
+        <tr>
+            <th><img src="acetaldehyde.png" alt="Acetaldehyde" draggable="true" ondragstart="drag(event)" id="drag4"> </th>
+            <th><img src="aliphatic.png" alt="aliphatic" draggable="true" ondragstart="drag(event)" id="drag5"> </th>
+            <th>
+                <img src="Alkene.png" alt="Alkene" draggable="true" ondragstart="drag(event)" id="drag6">
+            </th>
+        </tr>
+
+        <tr>
+            <th><img src="acetaldehyde.png" alt="Acetaldehyde" draggable="true" ondragstart="drag(event)" id="drag7"> </th>
+            <th><img src="aliphatic.png" alt="aliphatic" draggable="true" ondragstart="drag(event)" id="drag8"> </th>
+            <th>
+                <img src="Alkene.png" alt="Alkene" draggable="true" ondragstart="drag(event)" id="drag9">
+            </th>
+
+        </tr>
+    </table>
+
+    <div id="div2" ondrop="drop(event)" ondragover="allowDrop(event)"></div>
+    <p id="demo"></p>
+    
+</body>
+
+</html>
