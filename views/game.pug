@@ -4,8 +4,6 @@ html
             include looks.css
         script(src='https://code.jquery.com/jquery-latest.min.js')
         script(type='text/javascript').
-            //$(document).ready(function() {
-
                 function allowDrop(ev) {
                     ev.preventDefault();
                 }
@@ -20,16 +18,34 @@ html
                     ev.target.appendChild(document.getElementById(data));
                 }
 
-                document.getElementById('check').onclick = function() {
-                    document.getElementById('demo').innerHTML = "answer correct or incorrect";
-                }
-            //});
+                $(document).ready(function() {
+                    $('#check').on("click", function(e) {
+                        e.preventDefault();
+
+                        //remove previous answer check
+                        $('#result').empty();
+                        var reactant = $('#reactant').children('img').attr('id');
+                        var reagent = $('#reagent').children('img').attr('id');
+                        var product = $('#product').children('img').attr('id');
+
+                        //check answer
+                        if ((reactant == "drag1" && reagent == "drag2" && product == "drag3")
+                        || (reactant == "drag4" && reagent == "drag5" && product == "drag6")
+                        || (reactant == "drag7" && reagent == "drag8" && product == "drag9")) {
+                            $('#result').append($("<p>Correct!</p>"))
+                        } else {
+                            $('#result').append($("<p>Incorrect</p>"));
+                        }
+                    });
+                });
+
     body
         <div id='header'>
             h2="Chem Against Humanity"
             <p>Drag and drop the images from one box to the other</p>
         </div>
 
+        <!-- Currently displayed that each row is a solution -->
         <table id="div1" ondrop="drop(event)" ondragover="allowDrop(event)">
             <tr>
                 <th><img src="http://opsin.ch.cam.ac.uk/opsin/butyric%20acid.png" alt="butyric acid" draggable="true" ondragstart="drag(event)" id="drag1"> </th>
@@ -52,19 +68,18 @@ html
                 <th>
                     <img src="http://opsin.ch.cam.ac.uk/opsin/butyraldehyde.png" alt="butyraldehyde" draggable="true" ondragstart="drag(event)" id="drag9">
                 </th>
-
             </tr>
         </table>
 
-        <table id="div2" ondrop="drop(event)" ondragover="allowDrop(event)">
+        <table id="student_answer" ondrop="drop(event)" ondragover="allowDrop(event)">
 
             <tr>
-                <th> </th>
-                <th> </th>
-                <th> </th>
+                <th id="reactant"> </th>
+                <th id="reagent"> </th>
+                <th id="product"> </th>
             </tr>
 
         </table>
         <button id='check'>Submit</button>
 
-        <p id="demo"></p>
+        <div id="result"></div>
