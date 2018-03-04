@@ -14,6 +14,12 @@ class IndexRoute extends route_1.BaseRoute {
         router.post("/login", (req, res, next) => {
             new IndexRoute().login(req, res, next);
         });
+        router.get("/admin", (req, res, next) => {
+            new IndexRoute().admin(req, res, next);
+        });
+        router.post("/getImage", (req, res, next) => {
+            new IndexRoute().getImage(req, res, next);
+        });
     }
     constructor() {
         super();
@@ -35,6 +41,24 @@ class IndexRoute extends route_1.BaseRoute {
             options.status = "fail";
         }
         this.render(req, res, "login", options);
+    }
+    admin(req, res, next) {
+        let options = {
+            "title": "Admin page to input chemical reactions"
+        };
+        this.render(req, res, "admin", options);
+    }
+    getImage(req, res, next) {
+        var json_obj = {};
+        var src_urls = Object.keys(req.body).map(function (key) {
+            var chem = req.body[key];
+            var encoded = encodeURIComponent(chem);
+            var imgURL = "http://opsin.ch.cam.ac.uk/opsin/" + encoded + ".png";
+            json_obj[key] = imgURL;
+        });
+        var response = JSON.stringify(json_obj);
+        console.log("response = " + response);
+        res.send(response);
     }
 }
 exports.IndexRoute = IndexRoute;
