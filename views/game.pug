@@ -19,6 +19,17 @@ html
                 }
 
                 $(document).ready(function() {
+                
+                    var getOriginalPosition = function() {
+                        $('#div1 img').each( function() {
+                            //original position = row#column#
+                            var op = $(this).parent().attr('id');
+                            $(this).attr('data-op', op);
+                        });
+                    }
+
+                    getOriginalPosition();
+                    
                     $('#check').on("click", function(e) {
                         e.preventDefault();
 
@@ -35,8 +46,20 @@ html
                             $('#result').append($("<p>Correct!</p>"))
                         } else {
                             $('#result').append($("<p>Incorrect</p>"));
+                            $('#result').append($("<button id='clear_answers'>Clear</button>"));
+
+                            //clear answer choices and return to original position 
+                            $('#clear_answers').on("click", function(e) {
+                                e.preventDefault();
+                                //appends card to previous table position (row#column#)
+                                $('#div2 img').each( function() {
+                                    $('#' + $(this).attr('data-op')).append($(this));
+                                });
+                                $('#result').empty();
+                            });
                         }
                     });
+                    
                 });
 
     body
@@ -48,24 +71,24 @@ html
         <!-- Currently displayed that each row is a solution -->
         <table id="div1" ondrop="drop(event)" ondragover="allowDrop(event)">
             <tr>
-                <th><img src="http://opsin.ch.cam.ac.uk/opsin/butyric%20acid.png" alt="butyric acid" draggable="true" ondragstart="drag(event)" id="drag1"> </th>
-                <th><img src="http://opsin.ch.cam.ac.uk/opsin/thionyl%20chloride.png" alt="thionyl chloride" draggable="true" ondragstart="drag(event)" id="drag2"> </th>
-                <th>
+                <th id='r1c1'><img src="http://opsin.ch.cam.ac.uk/opsin/butyric%20acid.png" alt="butyric acid" draggable="true" ondragstart="drag(event)" id="drag1"> </th>
+                <th id='r1c2'><img src="http://opsin.ch.cam.ac.uk/opsin/thionyl%20chloride.png" alt="thionyl chloride" draggable="true" ondragstart="drag(event)" id="drag2"> </th>
+                <th id='r1c3'>
                     <img src="http://opsin.ch.cam.ac.uk/opsin/butyryl%20chloride.png" alt="butyryl chloride" draggable="true" ondragstart="drag(event)" id="drag3">
                 </th>
             </tr>
             <tr>
-                <th><img src="http://opsin.ch.cam.ac.uk/opsin/butyryl%20chloride.png" alt="butyryl chloride" draggable="true" ondragstart="drag(event)" id="drag4"> </th>
-                <th><img src="http://opsin.ch.cam.ac.uk/opsin/sodium%20methoxide.png" alt="sodium methoxide" draggable="true" ondragstart="drag(event)" id="drag5"> </th>
-                <th>
+                <th id='r2c1'><img src="http://opsin.ch.cam.ac.uk/opsin/butyryl%20chloride.png" alt="butyryl chloride" draggable="true" ondragstart="drag(event)" id="drag4"> </th>
+                <th id='r2c2'><img src="http://opsin.ch.cam.ac.uk/opsin/sodium%20methoxide.png" alt="sodium methoxide" draggable="true" ondragstart="drag(event)" id="drag5"> </th>
+                <th id='r2c3'>
                     <img src="http://opsin.ch.cam.ac.uk/opsin/methyl%20butyrate.png" alt="methyl butyrate" draggable="true" ondragstart="drag(event)" id="drag6">
                 </th>
             </tr>
 
             <tr>
-                <th><img src="http://opsin.ch.cam.ac.uk/opsin/1-butanol.png" alt="1-butanol" draggable="true" ondragstart="drag(event)" id="drag7"> </th>
-                <th><img src="http://opsin.ch.cam.ac.uk/opsin/pyridinium%20chlorochromate.png" alt="pyridinium chlorochromate" draggable="true" ondragstart="drag(event)" id="drag8"> </th>
-                <th>
+                <th id='r3c1'><img src="http://opsin.ch.cam.ac.uk/opsin/1-butanol.png" alt="1-butanol" draggable="true" ondragstart="drag(event)" id="drag7"> </th>
+                <th id='r3c2'><img src="http://opsin.ch.cam.ac.uk/opsin/pyridinium%20chlorochromate.png" alt="pyridinium chlorochromate" draggable="true" ondragstart="drag(event)" id="drag8"> </th>
+                <th id='r3c3'>
                     <img src="http://opsin.ch.cam.ac.uk/opsin/butyraldehyde.png" alt="butyraldehyde" draggable="true" ondragstart="drag(event)" id="drag9">
                 </th>
             </tr>
