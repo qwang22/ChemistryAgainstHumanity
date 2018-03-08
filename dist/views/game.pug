@@ -4,6 +4,7 @@ html
         style
             include looks.css
         script(src='https://code.jquery.com/jquery-latest.min.js')
+        script(src='https://cdn.rawgit.com/nnattawat/flip/master/dist/jquery.flip.min.js')
         script(type='text/javascript').
                 function allowDrop(ev) {
                     ev.preventDefault();
@@ -51,6 +52,14 @@ html
                 //End draft
 
                 $(document).ready(function() {
+
+                    let c = $(".card"); //flipping the images
+                    c.flip({axis:'y', trigger:'click'});
+
+                    let c1 = $(".card1");
+                      c.flip({axis:'y', trigger:'click'});
+                    //test 2nd column 
+                
                 
                     var getOriginalPosition = function() {
                         $('#div1 img').each( function() {
@@ -116,31 +125,105 @@ html
         <!-- Currently displayed that each row is a solution -->
         <table id="div1" ondrop="drop(event)" ondragover="allowDrop(event)">
             <tr>
-                <th id='r1c1'><img src="http://opsin.ch.cam.ac.uk/opsin/butyric%20acid.png" alt="butyric acid" draggable="true" ondragstart="drag(event)" id="drag1"> </th>
-                <th id='r1c2'><img src="http://opsin.ch.cam.ac.uk/opsin/thionyl%20chloride.png" alt="thionyl chloride" draggable="true" ondragstart="drag(event)" id="drag2"> </th>
+                <th id='r1c1'>
+                    <div class="card">
+                        <div class="front">
+                            <img src="http://opsin.ch.cam.ac.uk/opsin/butyric%20acid.png" alt="butyric acid" draggable="true" ondragstart="drag(event)" id="drag1">
+                        </div> 
+                        <div class="back">
+                            <p> butyric acid</p>
+                        </div>
+                    </div> 
+                </th>
+                <th id='r1c2'>
+                    <div class="card">
+                        <div class="front">
+                            <img src="http://opsin.ch.cam.ac.uk/opsin/thionyl%20chloride.png" alt="thionyl chloride" draggable="true" ondragstart="drag(event)" id="drag2">
+                        </div> 
+                        <div class="back">
+                            <p> thionyl chloride</p>
+                        </div>
+                    </div>
+                </th>
                 <th id='r1c3'>
-                    <img src="http://opsin.ch.cam.ac.uk/opsin/butyryl%20chloride.png" alt="butyryl chloride" draggable="true" ondragstart="drag(event)" id="drag3">
+                    <div class="card">
+                        <div class="front">
+                             <img src="http://opsin.ch.cam.ac.uk/opsin/butyryl%20chloride.png" alt="butyryl chloride" draggable="true" ondragstart="drag(event)" id="drag3">
+                        </div> 
+                        <div class="back">
+                            <p> butyryl chloride</p>
+                        </div>
+                    </div>
                 </th>
                 <th id='r1c4'>
                     <p> Placeholder </p>
                 </th>
             </tr>
-            <tr>
-                <th id='r2c1'><img src="http://opsin.ch.cam.ac.uk/opsin/butyryl%20chloride.png" alt="butyryl chloride" draggable="true" ondragstart="drag(event)" id="drag4"> </th>
-                <th id='r2c2'><img src="http://opsin.ch.cam.ac.uk/opsin/sodium%20methoxide.png" alt="sodium methoxide" draggable="true" ondragstart="drag(event)" id="drag5"> </th>
+            <tr> 
+                <th id='r2c1'>
+                    <div class="card">
+                        <div class="front">
+                             <img src="http://opsin.ch.cam.ac.uk/opsin/butyryl%20chloride.png" alt="butyryl chloride" draggable="true" ondragstart="drag(event)" id="drag4">
+                        </div> 
+                        <div class="back">
+                            <p> butyryl chloride</p>
+                        </div>
+                    </div>
+                </th>
+                <th id='r2c2'>
+                    <div class="card">
+                        <div class="front">
+                             <img src="http://opsin.ch.cam.ac.uk/opsin/sodium%20methoxide.png" alt="sodium methoxide" draggable="true" ondragstart="drag(event)" id="drag5">
+                        </div> 
+                        <div class="back">
+                            <p>sodium methoxide</p>
+                        </div>
+                    </div>
+                </th>
                 <th id='r2c3'>
-                    <img src="http://opsin.ch.cam.ac.uk/opsin/methyl%20butyrate.png" alt="methyl butyrate" draggable="true" ondragstart="drag(event)" id="drag6">
+                    <div class="card">
+                        <div class="front">
+                             <img src="http://opsin.ch.cam.ac.uk/opsin/methyl%20butyrate.png" alt="methyl butyrate" draggable="true" ondragstart="drag(event)" id="drag6">
+                        </div> 
+                        <div class="back">
+                            <p>methyl butyrate</p>
+                        </div>
+                    </div>                    
                 </th>
                 <th id='r2c4'>
                     <p> Placeholder </p>
                 </th>
             </tr>
-
             <tr>
-                <th id='r3c1'><img src="http://opsin.ch.cam.ac.uk/opsin/1-butanol.png" alt="1-butanol" draggable="true" ondragstart="drag(event)" id="drag7"> </th>
-                <th id='r3c2'><img src="http://opsin.ch.cam.ac.uk/opsin/pyridinium%20chlorochromate.png" alt="pyridinium chlorochromate" draggable="true" ondragstart="drag(event)" id="drag8"> </th>
+                <th id='r3c1'>
+                    <div class="card">
+                        <div class="front">
+                            <img src="http://opsin.ch.cam.ac.uk/opsin/1-butanol.png" alt="1-butanol" draggable="true" ondragstart="drag(event)" id="drag7">
+                        </div> 
+                        <div class="back">
+                            <p>1-butanol</p>
+                        </div>
+                    </div> 
+                </th>
+                <th id='r3c2'>
+                    <div class="card">
+                        <div class="front">
+                            <img src="http://opsin.ch.cam.ac.uk/opsin/pyridinium%20chlorochromate.png" alt="pyridinium chlorochromate" draggable="true" ondragstart="drag(event)" id="drag8"> 
+                        </div> 
+                        <div class="back">
+                            <p>pyridinium chlorochromate</p>
+                        </div>
+                    </div>  
+                </th>
                 <th id='r3c3'>
-                    <img src="http://opsin.ch.cam.ac.uk/opsin/butyraldehyde.png" alt="butyraldehyde" draggable="true" ondragstart="drag(event)" id="drag9">
+                    <div class="card">
+                        <div class="front">
+                            <img src="http://opsin.ch.cam.ac.uk/opsin/butyraldehyde.png" alt="butyraldehyde" draggable="true" ondragstart="drag(event)" id="drag9"> 
+                        </div> 
+                        <div class="back">
+                            <p>butyraldehyde</p>
+                        </div>
+                    </div> 
                 </th>
                 <th id='r3c4'>
                     <p> Placeholder </p>
