@@ -1,5 +1,6 @@
 html
     head
+        link(href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.3.0/css/font-awesome.css" rel="stylesheet"  type='text/css')
         style
             include looks.css
         script(src='https://code.jquery.com/jquery-latest.min.js')
@@ -17,6 +18,37 @@ html
                     var data = ev.dataTransfer.getData("text");
                     ev.target.appendChild(document.getElementById(data));
                 }
+
+                //Draft for Popup Instructions Functions
+                $(function(){ 
+                    $('.inst_button').on('click',function(){
+                        $('.inst').css({
+                            'transform':'translateY(0)','z-index':'999'
+                        });
+    
+                     $('body').addClass('overlay');
+
+    
+                     $(this).css({
+                        'z-index':'-1'
+                     });
+    
+                    $('.inst > .close').on('click',function(){
+                        $(this).parent().css({
+                            'transform':'translateY(-300%)'
+                        });
+     
+                        $('body').removeClass('overlay');
+                            $(this).parent().siblings('.btn').css({
+                                'z-index':'1'
+                            });
+                    });
+                    });
+                });
+
+                //Leaderboard button: 
+                
+                //End draft
 
                 $(document).ready(function() {
                 
@@ -62,9 +94,23 @@ html
                     
                 });
 
-    body
+    <body>
+        <div class="content">
         <div id='header'>
-            <img src="http://i63.tinypic.com/2edp7aw.png" alt="LOGO" width="35%" align="middle">
+            <img src="http://i63.tinypic.com/2edp7aw.png" alt="LOGO" width="25%" align="middle">
+        </div>
+        <div id='buttons'>
+            <button class="inst_button"> Instructions </button>
+            <button class="lead_button"> Leaderboard </button>
+            <button class="toggle"> Mode Toggle </button>
+            <div class="inst">
+                <h1> Instructions here </h1>
+                <div class="close"> X </div>
+            </div>
+            //- <div class="lead">
+            //-     <h1> Leaderboard here </h1>
+            //-     <div class="close"> X </div>
+            //- </div>
         </div>
 
         <!-- Currently displayed that each row is a solution -->
@@ -75,12 +121,18 @@ html
                 <th id='r1c3'>
                     <img src="http://opsin.ch.cam.ac.uk/opsin/butyryl%20chloride.png" alt="butyryl chloride" draggable="true" ondragstart="drag(event)" id="drag3">
                 </th>
+                <th id='r1c4'>
+                    <p> Placeholder </p>
+                </th>
             </tr>
             <tr>
                 <th id='r2c1'><img src="http://opsin.ch.cam.ac.uk/opsin/butyryl%20chloride.png" alt="butyryl chloride" draggable="true" ondragstart="drag(event)" id="drag4"> </th>
                 <th id='r2c2'><img src="http://opsin.ch.cam.ac.uk/opsin/sodium%20methoxide.png" alt="sodium methoxide" draggable="true" ondragstart="drag(event)" id="drag5"> </th>
                 <th id='r2c3'>
                     <img src="http://opsin.ch.cam.ac.uk/opsin/methyl%20butyrate.png" alt="methyl butyrate" draggable="true" ondragstart="drag(event)" id="drag6">
+                </th>
+                <th id='r2c4'>
+                    <p> Placeholder </p>
                 </th>
             </tr>
 
@@ -90,18 +142,28 @@ html
                 <th id='r3c3'>
                     <img src="http://opsin.ch.cam.ac.uk/opsin/butyraldehyde.png" alt="butyraldehyde" draggable="true" ondragstart="drag(event)" id="drag9">
                 </th>
+                <th id='r3c4'>
+                    <p> Placeholder </p>
+                </th>
+            </tr>
+            <tr>
+                <th id='r4c1'> <p> Placeholder </p></th>
+                <th id='r4c2'><p> Placeholder </p></th>
+                <th id='r4c3'><p> Placeholder </p></th>
+                <th id='r3c4'><p> Placeholder </p></th>
             </tr>
         </table>
 
         <table id="div2" ondrop="drop(event)" ondragover="allowDrop(event)">
-
             <tr>
                 <th id="reactant"> </th>
                 <th id="reagent"> </th>
                 <th id="product"> </th>
             </tr>
-
         </table>
-        <button id='check'>Submit</button>
-
+        <div id='submit'>
+            <button id='check'>Submit</button>
+        </div>
         <div id="result"></div>
+        </div>
+    </body>
