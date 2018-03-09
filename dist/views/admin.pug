@@ -1,0 +1,54 @@
+html
+    head
+        script(src='https://code.jquery.com/jquery-latest.min.js')
+        script(type='text/javascript').
+            $(document).ready(function() {
+                $('#nameToDepiction').on('submit', function(e) {
+                    e.preventDefault();
+
+                    //remove previous image depictions
+                    $('#depiction').empty();
+                    var data = {
+                        chem1: $('#chem1').val(),
+                        chem2: $('#chem2').val(),
+                        chem3: $('#chem3').val()
+                    };
+                    $.ajax({
+                        url:'/getImage',
+                        data: data,
+                        method: 'POST',
+                        error: function(response) {
+                            console.log("error in ajax call");
+                        }
+                    }).then(function(response) {
+
+                        //Append depictions to page
+                        var json_obj = JSON.parse(response);
+                        $('#depiction').append($("<img id='chem1_src'src=" + json_obj['chem1'] + ">"));
+                        $('#depiction').append($("<img id='chem2_src'src=" + json_obj['chem2'] + ">"));
+                        $('#depiction').append($("<img id='chem3_src'src=" + json_obj['chem3'] + ">"));
+
+                        //Save depictions to database ---IN PROGRESS------
+                    });
+                });
+            });
+    body
+        h1= title
+        <p>Enter a chemical name to see its depiction</p>
+        <form action='/image' id='nameToDepiction' method="POST">
+            <input type='text' name='name' id='chem1' placeholder='chem1' />
+            <input type='text' name='name' id='chem2' placeholder='reagent' />
+            <input type='text' name='name' id='chem3' placeholder='reaction' />
+            <input type='submit' value='Submit' />
+        </form>
+        <p>Some to try (not actual reactions):</p>
+        <ul>
+            <li>2,4,6-trinitrotoluene</li>
+            <li>cyclopropane</li>
+            <li>acetate</li>
+            <li>glucose</li>
+            <li>amphetamine</li>
+            <li>whatever else you think of</li>
+        </ul>
+        <p>Depictions will appear here:</p>
+        <div id='depiction'></div>
