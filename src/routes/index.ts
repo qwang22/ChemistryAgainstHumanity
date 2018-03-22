@@ -1,7 +1,7 @@
 import { NextFunction, Request, Response, Router } from "express";
 import { BaseRoute } from "./route";
 const https = require("https");
-
+import mongo = require("mongodb");
 
 /**
  * / route
@@ -17,6 +17,8 @@ export class IndexRoute extends BaseRoute {
      * @method create
      * @static
      */
+
+
     public static create(router: Router) {
         // log
         console.log("[IndexRoute::create] Creating index route.");
@@ -48,6 +50,11 @@ export class IndexRoute extends BaseRoute {
         router.get("/game", (req: Request, res: Response, next: NextFunction) => {
             new IndexRoute().game(req, res, next);
         });
+
+	router.post("/addReaction", (req: Request, res: Response, next: NextFunction) => {
+		new IndexRoute().addReaction(req, res, next);
+	});
+
     }
 
     
@@ -136,5 +143,16 @@ export class IndexRoute extends BaseRoute {
         let options: any = {};
         
         this.render(req, res, "game", options);
+    }
+
+    public addReaction(req: Request, res: Response, next: NextFunction) {
+        mongo.MongoClient.connect("mongodb://localhost:27017", function(err, db) {
+                if (err) throw err;
+                var dbo = db.db("chemistryagainsthumanity");
+		dbo.collection("cards").insertOne(req.body.card1, function(err, res) {
+		if (err) throw err;
+    		console.log("1 document inserted");
+		});
+	});
     }
 }

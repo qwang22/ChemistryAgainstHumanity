@@ -8,19 +8,23 @@ var https = require("https");
 var fs = require("fs");
 
 //create http server
-var httpPort = normalizePort(process.env.PORT || 8080);
+var httpPort = normalizePort(8080);
 var app = server.Server.bootstrap().app;
 app.set("port", httpPort);
 
-const httpsOptions = {
-  key: fs.readFileSync('./key.pem'),
-  cert: fs.readFileSync('./cert.pem')
-}
+//const httpsOptions = {
+//  key: fs.readFileSync('./key.pem'),
+//  cert: fs.readFileSync('./cert.pem')
+//}
 
-var httpServer = https.createServer(httpsOptions, app);
+//var httpServer = https.createServer(httpsOptions, app);
+
+var httpServer = app.listen(httpPort, function() {
+  console.log("APPLICATION STARTED");
+});
 
 //listen on provided ports
-httpServer.listen(httpPort);
+//httpServer.listen(httpPort);
 
 //add error handler
 httpServer.on("error", onError);
@@ -56,18 +60,20 @@ function onError(error) {
     throw error;
   }
 
-  var bind = typeof port === "string"
-    ? "Pipe " + port
-    : "Port " + port;
+//  var bind = typeof port === "string"
+//    ? "Pipe " + port
+//    : "Port " + port;
 
   // handle specific listen errors with friendly messages
   switch (error.code) {
     case "EACCES":
-      console.error(bind + " requires elevated privileges");
+//      console.error(bind + " requires elevated privileges");
+	console.error("EACCES");
       process.exit(1);
       break;
     case "EADDRINUSE":
-      console.error(bind + " is already in use");
+//      console.error(bind + " is already in use");
+	console.error("EADDRINUSE");
       process.exit(1);
       break;
     default:
