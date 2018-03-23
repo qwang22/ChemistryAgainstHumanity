@@ -60,21 +60,25 @@ html
                       c.flip({axis:'y', trigger:'click'});
                     //test 2nd column 
                 
+                
                     var getOriginalPosition = function() {
                         $('#div1 img').each( function() {
                             //original position = row#column#
-                            var op = $(this).parent().attr('id');
+                            //var op = $(this).parent().attr('id');
+                            var op = $(this).parents().eq(2).attr('id');
                             $(this).attr('data-op', op);
                         });
                     }
 
                     getOriginalPosition();
                     
+                    var score = 0;
                     $('#check').on("click", function(e) {
                         e.preventDefault();
 
                         //remove previous answer check
                         $('#result').empty();
+                        $('#score').empty();
                         var reactant = $('#reactant').children('img').attr('id');
                         var reagent = $('#reagent').children('img').attr('id');
                         var product = $('#product').children('img').attr('id');
@@ -83,21 +87,25 @@ html
                         if ((reactant == "drag1" && reagent == "drag2" && product == "drag3")
                         || (reactant == "drag4" && reagent == "drag5" && product == "drag6")
                         || (reactant == "drag7" && reagent == "drag8" && product == "drag9")) {
-                            $('#result').append($("<p>Correct!</p>"))
+                            score++;
+                            $('#result').append("<p>Correct</p>")
+                            $('#score').append("<p>Score: "+score+"</p>")
                         } else {
-                            $('#result').append($("<p>Incorrect</p>"));
-                            $('#result').append($("<button id='clear_answers'>Clear</button>"));
-
-                            //clear answer choices and return to original position 
+                            score--;
+                            $('#result').append("<p>Incorrect</p>")
+                            $('#score').append("<p>Score: "+score+"</p>");
+                        }
+                        $('#result').append($("<button id='clear_answers'>Clear</button>"));
+                        
+                         //clear answer choices and return to original position 
                             $('#clear_answers').on("click", function(e) {
                                 e.preventDefault();
                                 //appends card to previous table position (row#column#)
                                 $('#div2 img').each( function() {
-                                    $('#' + $(this).attr('data-op')).append($(this));
+                                    $('#' + $(this).attr('data-op') + ' .front').append($(this));
                                 });
                                 $('#result').empty();
                             });
-                        }
                     });
                     
                 });
@@ -132,17 +140,7 @@ html
                         <div class="back">
                             <p> butyric acid</p>
                         </div>
-                    </div>
-                    //- <section class="container">
-                    //-     <div class="card" onclick="flip()">
-                    //-         <figure class="front">
-                    //-             <img src="http://opsin.ch.cam.ac.uk/opsin/butyric%20acid.png" alt="butyric acid" draggable="true" ondragstart="drag(event)" id="drag1">
-                    //-         </figure> 
-                    //-         <figure class="back">
-                    //-             <p> butyric acid</p>
-                    //-         </figure>
-                    //-     </div>
-                    //- </section> 
+                    </div> 
                 </th>
                 <th id='r1c2'>
                     <div class="card">
@@ -257,5 +255,6 @@ html
             <button id='check'>Submit</button>
         </div>
         <div id="result"></div>
+        <div id='score'></div>
         </div>
     </body>
