@@ -111,7 +111,7 @@ export class IndexRoute extends BaseRoute {
     public admin(req: Request, res: Response, next: NextFunction) {
 
         let options: Object = {
-            "title" : "Admin page to input chemical reactions"
+            "title" : "Reaction Dashboard"
         }
 
         this.render(req, res, "admin", options);

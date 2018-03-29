@@ -20,9 +20,11 @@ html
                     ev.target.appendChild(document.getElementById(data));
                 }
 
+
+
                 //Draft for Popup Instructions Functions
                 $(function(){ 
-                    $('.inst_button').on('click',function(){
+                    $('.inst_button ').on('click',function(){
                         $('.inst').css({
                             'transform':'translateY(0)','z-index':'999'
                         });
@@ -48,6 +50,31 @@ html
                 });
 
                 //Leaderboard button: 
+                $(function(){ 
+                    $('.lead_button').on('click',function(){
+                        $('.lead').css({
+                            'transform':'translateY(-125%)','z-index':'800'
+                        });
+    
+                     $('body').addClass('overlay');
+
+    
+                     $(this).css({
+                        'z-index':'-1'
+                     });
+    
+                    $('.lead > .close').on('click',function(){
+                        $(this).parent().css({
+                            'transform':'translateY(-400%)'
+                        });
+     
+                        $('body').removeClass('overlay');
+                            $(this).parent().siblings('.btn').css({
+                                'z-index':'1'
+                            });
+                    });
+                    });
+                });
                 
                 //End draft
 
@@ -116,17 +143,17 @@ html
             <img src="http://i63.tinypic.com/2edp7aw.png" alt="LOGO" width="25%" align="middle">
         </div>
         <div id='buttons'>
-            <button class="inst_button"> Instructions </button>
-            <button class="lead_button"> Leaderboard </button>
+            <button class="inst_button" > Instructions </button>
+            <button class="lead_button" > Leaderboard </button>
             <button class="toggle"> Mode Toggle </button>
             <div class="inst">
                 <h1> Instructions here </h1>
                 <div class="close"> X </div>
             </div>
-            //- <div class="lead">
-            //-     <h1> Leaderboard here </h1>
-            //-     <div class="close"> X </div>
-            //- </div>
+            <div class="lead">
+                <h1> Leaderboard here </h1>
+                <div class="close"> X </div>
+            </div>
         </div>
 
         <!-- Currently displayed that each row is a solution -->

@@ -2,6 +2,7 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 const route_1 = require("./route");
 const https = require("https");
+const mongo = require("mongodb");
 class IndexRoute extends route_1.BaseRoute {
     static create(router) {
         console.log("[IndexRoute::create] Creating index route.");
@@ -22,6 +23,9 @@ class IndexRoute extends route_1.BaseRoute {
         });
         router.get("/game", (req, res, next) => {
             new IndexRoute().game(req, res, next);
+        });
+        router.post("/addReaction", (req, res, next) => {
+            new IndexRoute().addReaction(req, res, next);
         });
     }
     constructor() {
@@ -47,7 +51,7 @@ class IndexRoute extends route_1.BaseRoute {
     }
     admin(req, res, next) {
         let options = {
-            "title": "Admin page to input chemical reactions"
+            "title": "Reaction Dashboard"
         };
         this.render(req, res, "admin", options);
     }
@@ -66,6 +70,18 @@ class IndexRoute extends route_1.BaseRoute {
     game(req, res, next) {
         let options = {};
         this.render(req, res, "game", options);
+    }
+    addReaction(req, res, next) {
+        mongo.MongoClient.connect("mongodb://localhost:27017", function (err, db) {
+            if (err)
+                throw err;
+            var dbo = db.db("chemistryagainsthumanity");
+            dbo.collection("cards").insertOne(req.body.card1, function (err, res) {
+                if (err)
+                    throw err;
+                console.log("1 document inserted");
+            });
+        });
     }
 }
 exports.IndexRoute = IndexRoute;
