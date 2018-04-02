@@ -2,7 +2,7 @@ body {
     /*(font-family: 'Merriweather';*/
     background: linear-gradient(to right, rgba(12, 88, 160, 0.863), #24C6DC);
     height: 100%;
-    overflow: hidden;
+    /*overflow: hidden;*/
 }
 .content{
     width:100%;
@@ -106,8 +106,6 @@ ul li img {
     top:50%;
     transform: translate(0, -50%);
     align-content: center;
-    width: 100%;
-
 }
 
 .card{
@@ -191,6 +189,16 @@ p{
 #drag6,
 #drag7,
 #drag8 {
+    width:75%;
+    height:75%;
+    margin-top: 10%;
+    background-color: solid white;
+    top: 50%;
+    /* transform: translateY(-50%); */
+    
+}
+
+.card img {
     width:75%;
     height:75%;
     margin-top: 10%;
@@ -301,3 +309,8 @@ h1{
      -webkit-transition:3s;
      transition:3s ;
   }
+
+button#start_game {
+    margin: auto;
+    display: block;
+}
