@@ -52,8 +52,12 @@ export class IndexRoute extends BaseRoute {
         });
 
 	router.post("/addReaction", (req: Request, res: Response, next: NextFunction) => {
-		new IndexRoute().addReaction(req, res, next);
+	    new IndexRoute().addReaction(req, res, next);
 	});
+	
+	router.post("/generateCards", (req: Request, res: Response, next: NextFunction) => {
+            new IndexRoute().generateCards(req, res, next);
+        });
 
     }
 
@@ -119,16 +123,23 @@ export class IndexRoute extends BaseRoute {
 
     public getImage(req: Request, res: Response, next: NextFunction) {
 
-        // req.body = {"chem1":chemName, "chem2": chemName, "chem3": chemName} 
-        
+        // req.body = {reactant: {name: name, depiction: img_src}, reagent: {...}, product: {...}}
         var json_obj = {};
 
-        // loop that sets json_obj = {chem1: img_url1, chem2: img_url2, chem3: img_url3}
-        var src_urls = Object.keys(req.body).map(function(key) {
-            var chem = req.body[key];
-            var encoded = encodeURIComponent(chem);
-            var imgURL = "http://opsin.ch.cam.ac.uk/opsin/" + encoded + ".png"
-            json_obj[key] = imgURL;
+        Object.keys(req.body).map(function(key) {
+            var chem = req.body[key]['name'];
+            var img_src;
+            //if admin did not upload image depiction, we will pull depiction from api
+            if (typeof req.body[key]['depiction'] == 'undefined') {
+                var encoded = encodeURIComponent(chem);
+                img_src = "http://opsin.ch.cam.ac.uk/opsin/" + encoded + ".png"
+            } else {
+                img_src = req.body[key]['depiction']
+            }
+            json_obj[key] = {
+                name: chem,
+                depiction: img_src
+            }
         });
 
         var response = JSON.stringify(json_obj);
@@ -146,13 +157,64 @@ export class IndexRoute extends BaseRoute {
     }
 
     public addReaction(req: Request, res: Response, next: NextFunction) {
+        console.log(req.body)
+
+        //for storing to local db
+        var host = "mongodb://localhost:27017";
+        //for storing to blade db
+        //var host = "mongodb://152.2.133.33:27017";
+        mongo.MongoClient.connect(host, function(err, db) {
+            if (err) throw err;
+            var dbo = db.db("chemistryagainsthumanity");
+
+           var reaction_entry = {
+               reactant: req.body.reactant,
+               reagent: req.body.reagent,
+               product: req.body.product,
+               active: true
+           }
+
+           //console.log("reaction_entry = " + JSON.stringify(reaction_entry))
+
+           dbo.collection("reactions").insertOne(reaction_entry, function(err, res) {
+               if (err) throw err;
+               var rid = res['ops'][0]['_id'];
+               console.log('1 reaction inserted into reactions table');
+
+               var cards_entry = new Array();
+               Object.keys(req.body).map(function(key) {
+                   var card_obj = {
+                       rid: rid,
+                       type: key,
+                       front: req.body[key]['front'],
+                       back: req.body[key]['back']
+                   }
+                   cards_entry.push(card_obj);
+                });
+                //console.log("cards_entry = " + cards_entry);
+
+                dbo.collection("cards").insertMany(cards_entry, function(err, res) {
+                    if (err) throw err;
+                    console.log('3 cards inserted into cards table')
+                });
+           });
+            
+        });
+        var response = {status: "done"}
+        res.send(response);
+    }
+	
+    public generateCards(req: Request, res: Response, next: NextFunction) {
         mongo.MongoClient.connect("mongodb://localhost:27017", function(err, db) {
-                if (err) throw err;
-                var dbo = db.db("chemistryagainsthumanity");
-		dbo.collection("cards").insertOne(req.body.card1, function(err, res) {
-		if (err) throw err;
-    		console.log("1 document inserted");
-		});
-	});
+            if (err) throw err;
+            var dbo = db.db("chemistryagainsthumanity");
+
+            dbo.collection("cards").find({}).toArray(function(err, res2) {
+               if (err) throw err;
+               console.log(res2)
+               var response = JSON.stringify(res2);
+               res.send(response);
+            });
+        });
     }
 }
