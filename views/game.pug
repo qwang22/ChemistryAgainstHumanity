@@ -140,7 +140,7 @@ html
     <body>
         <div class="content">
         <div id='header'>
-            <img src="http://i63.tinypic.com/2edp7aw.png" alt="LOGO" width="25%" align="middle">
+            <img src="http://i68.tinypic.com/9bhxqg.png" alt="LOGO" width="25%" align="middle">
         </div>
         <div id='buttons'>
             <button class="inst_button" > Instructions </button>
@@ -273,13 +273,15 @@ html
 
         <table id="div2" ondrop="drop(event)" ondragover="allowDrop(event)">
             <tr>
-                <th id="reactant"> </th>
-                <th id="reagent"> </th>
-                <th id="product"> </th>
+                <th class='sub_box' id="reactant"> </th>
+                <th class='symbol' id="plus">+ </th>
+                <th class='sub_box' id="reagent"> </th>
+                <th class='symbol' id="arrow">=</th>
+                <th class='sub_box' id="product"> </th>
             </tr>
         </table>
         <div id='submit'>
-            <button id='check'>Submit</button>
+            <button class='submit' id='check'>Submit</button>
         </div>
         <div id="result"></div>
         <div id='score'></div>

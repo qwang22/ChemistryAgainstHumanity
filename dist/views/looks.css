@@ -21,24 +21,25 @@ body {
     height: 50%;
     margin-left: 25%;
     margin-right: 25%;
-    border: 1px solid white;
+    /* border: 1px solid white; */
     border-collapse: separate;
     border-spacing: 10px;
 }
 
 #div2 {
-    width: 50%;
-    height: 20%;
+    width: 45%;
+    height: 15%;
     margin: 0 auto;
-    border: 1px solid black;
+    /* border: 1px solid black; */
     border-collapse: separate;
     border-spacing: 10px;
     float: left;
-    margin-left: 25%;
+    margin-left: 27%;
     margin-top: 15px;
 }
 #submit{
-    float: right;
+    margin-left: 45%;
+    margin-right: 45%;
     text-align: center;
 }
 
@@ -67,6 +68,12 @@ td, th {
 
 #header{
     text-align: center;
+    /* overflow: hidden; */
+    /* width: 25%; */
+    /* height: 15%;
+    display: inline-block;
+    padding: 2px; */
+
 }
 
 ul {
@@ -210,9 +217,10 @@ p{
     height: 35px;
     margin-left: 20%;
     text-align: center;
+    float: left;
 }
 
-.inst_button, .lead_button, .toggle{
+.inst_button, .lead_button, .toggle, .submit{
     -webkit-transform:scale(1);
     -ms-transform:scale(1);
     transform:scale(1);
@@ -230,11 +238,11 @@ p{
     margin-top: 5px;
 }
 
-.inst_button:focus, .lead_button:focus, .toggle:focus{
+.inst_button:focus, .submit:focus, .lead_button:focus, .toggle:focus{
     outline:none;
 }
 
-.inst_button:hover, .lead_button:hover, .toggle:hover{
+.inst_button:hover, .submit:hover, .lead_button:hover, .toggle:hover{
     -webkit-transform:scale(1.2);
   transform:scale(1.2);
   background:#24C6DC;
@@ -264,6 +272,14 @@ box-shadow: 0px 0px 20px rgba(56,56,56,.2);
     -webkit-transition: all 900ms cubic-bezier(0.68, -0.55, 0.265, 1.55);
     transition: all 900ms cubic-bezier(0.68, -0.55, 0.265, 1.55);
   }
+
+.sub_box{
+    border: dashed;
+    border-color: black;
+    padding: 15px;
+ 
+}
+
 /* 
  .lead{
     display:block;
