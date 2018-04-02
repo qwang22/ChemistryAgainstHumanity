@@ -2,37 +2,41 @@ html
     head
         style
             include admin.css
+            include dropzone.css
+        script
+            include dropzone.js
         script(src='https://code.jquery.com/jquery-latest.min.js')
         script(type='text/javascript').
+            Dropzone.autoDiscover = false;
             $(document).ready(function() {
-                $('#nameToDepiction').on('submit', function(e) {
-                    e.preventDefault();
 
-                    //remove previous image depictions
-                    
-                    if ($('#reactant-img').children().length == 0) {
-                        $('#reactant-img').empty();
-                    }
-                    if ($('#reagent-img').children().length == 0) {
-                        $('#reagent-img').empty();
-                    }
-                    if ($('#product-img').children().length == 0) {
-                        $('#product-img').empty();
-                    }
-                    if ($('#reactant-img').children().length == 1 
-                    && $('#reagent-img').children().length == 1
-                    && $('#product-img').children().length == 1) {
-                        $('#reactant-img').empty();
-                        $('#reagent-img').empty();
-                        $('#product-img').empty();
-                    }
-                    
+                $('#depiction > div').each( function() {
+                    var dropzone = new Dropzone('#' + this.id, {
+                        url: '/',
+                        uploadMultiple: false,
+                        acceptedFiles: '.png',
+                        dictDefaultMessage: 'Drag and drop or click to choose file'
+                    });
+                });
+
+                $('#nameToDepiction').on('submit', function(e) {
+                    e.preventDefault();            
 
                     var data = {
-                        reactant: $('#reactant').val(),
-                        reagent: $('#reagent').val(),
-                        product: $('#product').val()
-                    };
+                        reactant: {
+                            name: $('#reactant').val(),
+                            depiction: $('#depiction #reactant-img img').attr('src')
+                        },
+                        reagent: {
+                            name: $('#reagent').val(),
+                            depiction: $('#depiction #reagent-img img').attr('src')
+                        },
+                        product: {
+                            name: $('#product').val(),
+                            depiction: $('#depiction #product-img img').attr('src')
+                        }
+                    }
+
                     $.ajax({
                         url:'/getImage',
                         data: data,
@@ -44,38 +48,85 @@ html
 
                         //Append depictions to page
                         var json_obj = JSON.parse(response);
-                        if ($('#reactant-img').children().length == 0) {
-                            $('#reactant-img').append($("<img id='reagent_src'src=" + json_obj['reactant'] + ">"));
+                        //if currently no depiction is displayed
+                        if ($('#reactant-img').children().length == 2) {
+                            $('#reactant-img .dz-message').hide();
+                            $('#reactant-img').append($("<img id='reactant_src'src=" + json_obj['reactant']['depiction'] + " alt=" + "'" + json_obj['reactant']['name'] + "'>"));
                         }
-                        if ($('#reagent-img').children().length == 0) {
-                            $('#reagent-img').append($("<img id='reactant_src'src=" + json_obj['reagent'] + ">"));
+                        if ($('#reagent-img').children().length == 2) {
+                            $('#reagent-img .dz-message').hide();
+                            $('#reagent-img').append($("<img id='reagent_src'src=" + json_obj['reagent']['depiction'] + " alt=" + "'" + json_obj['reagent']['name'] + "'>"));
                         }
-                        if ($('#product-img').children().length == 0 ) {
-                            $('#product-img').append($("<img id='product_src'src=" + json_obj['product'] + ">"));
+                        if ($('#product-img').children().length == 2) {
+                            $('#product-img .dz-message').hide();
+                            $('#product-img').append($("<img id='product_src'src=" + json_obj['product']['depiction'] + " alt=" + "'" + json_obj['product']['name'] + "'>"));
                         }
 
-                        //Save depictions to database ---IN PROGRESS------
+                        //show the "confirm reaction" button for database upload
+                        $('#confirm').show();
+                        $('#clear').show();
                     });
+                    
                 });
 
-                //image upload 
-                $('form input#reactant-upload').change( function() {
-                    $('#reactant-img').empty();
-                    var imgFile = window.URL.createObjectURL(this.files[0]);
-                    $('#reactant-img').append($("<img id='reactant_src' src=" + imgFile + ">"));
+                //Save depictions to database
+                $('#confirm').click( function(e) {
+                    e.preventDefault();
+                    console.log("you clicked the confirm button");
+
+                    var cards = {
+                        reactant: {
+                            front: $('#reactant-img img').attr('src'),
+                            back: $('#reactant').val()
+                        },
+                        reagent: {
+                            front: $('#reagent-img img').attr('src'),
+                            back: $('#reagent').val()
+                        },
+                        product: {
+                            front: $('#product-img img').attr('src'),
+                            back: $('#product').val()
+                        }
+                    }
+
+                    $.ajax({
+                        url: '/addReaction',
+                        data: cards,
+                        method: 'POST',
+                        error: function(response) {
+                            console.log('error in ajax call');
+                        }
+                    }).then( function(response) {
+                        console.log('done');
+                        $('#confirm').hide();
+                    });
+
+                    alert("Reaction uploaded");
+                    $('#depiction img').remove();
+                    $('#depiction .dz-preview').remove();
+                    $('#depiction .dropzone').removeClass("dz-started");
+                    $('#depiction .dz-message').show()
+                    $('#nameToDepiction')[0].reset();
                 });
 
-                $('form input#reagent-upload').change( function() {
-                    $('#reagent-img').empty();
-                    var imgFile = window.URL.createObjectURL(this.files[0]);
-                    $('#reagent-img').append($("<img id='reagent_src' src=" + imgFile + ">"));
+                $('#clear').click( function(e) {
+                    e.preventDefault();
+                    $('#depiction img').remove();
+                    $('#depiction .dz-preview').remove();
+                    $('#depiction .dropzone').removeClass("dz-started");
+                    $('#depiction .dz-message').show();
+                    $('#nameToDepiction')[0].reset();
+                    $(this).hide();
                 });
 
-                $('form input#product-upload').change( function() {
-                    $('#product-img').empty();
-                    var imgFile = window.URL.createObjectURL(this.files[0])
-                    $('#product-img').append($("<img id='product_src' src=" + imgFile + ">"));
-                });
+                $('button.x').click( function(e) {
+                    e.preventDefault();
+                    var parent = $(this).parent().attr('id');
+                    $('#' + parent + ' img').remove();
+                    $('#' + parent).removeClass('dz-started');
+                    $('#' + parent + ' .dz-preview').remove();
+                    $('#' + parent + ' .dz-message').show();
+                })
 
             });
     body
@@ -83,16 +134,16 @@ html
         <p>Enter a chemical name to see its depiction</p>
 
         <div id='depiction'>
-            <div class='image' id='reactant-img'></div>
-            <div class='image' id='reagent-img'></div>
-            <div class='image' id='product-img'></div>
+            <div class='image dropzone' id='reactant-img'>
+                <button class='x'>x</button>
+            </div>
+            <div class='image dropzone' id='reagent-img'>
+                <button class='x'>x</button>
+            </div>
+            <div class='image dropzone' id='product-img'>
+                <button class='x'>x</button>
+            </div>
         </div>
-
-        <form action='' id='upload' method='POST'>
-            <input type='file' name='file' id='reactant-upload' accept='.png' />
-            <input type='file' name='file' id='reagent-upload' accept='.png' />
-            <input type='file' name='file' id='product-upload' accept='.png' />
-        </form>
 
         <form action='' id='nameToDepiction' method="POST">
             <input type='text' name='name' id='reactant' placeholder='reactant' />
@@ -101,6 +152,9 @@ html
             <input type='submit' value='Check' />
         </form>
 
+        <button id='confirm' style='display: none;'>Confirm</button>
+        <button id='clear' style='display: none;'>Clear</button>
+
         <p>Some to try (not actual reactions):</p>
         <ul>
             <li>2,4,6-trinitrotoluene</li>
@@ -108,5 +162,11 @@ html
             <li>acetate</li>
             <li>glucose</li>
             <li>amphetamine</li>
-            <li>whatever else you think of</li>
         </ul>
+
+        <form action='/'>
+            <input type='submit' value='Home Page' />
+        </form>
+        <form action='/game'>
+            <input type='submit' value='Game Page' />
+        </form>
