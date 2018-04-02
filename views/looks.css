@@ -220,12 +220,17 @@ p{
 
 /*Popup Begin */
 
-#buttons{
+#buttons, #start_game {
     width: 60%;
     height: 35px;
     margin-left: 20%;
     text-align: center;
     float: left;
+}
+
+#start_game {
+    width: 25%;
+    margin-left: 20%;
 }
 
 .inst_button, .lead_button, .toggle, #submit{
@@ -351,8 +356,3 @@ h1{
      -webkit-transition:3s;
      transition:3s ;
   }
-
-button#start_game {
-    margin: auto;
-    display: block;
-}
