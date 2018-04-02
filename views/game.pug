@@ -20,9 +20,11 @@ html
                     ev.target.appendChild(document.getElementById(data));
                 }
 
+
+
                 //Draft for Popup Instructions Functions
                 $(function(){ 
-                    $('.inst_button').on('click',function(){
+                    $('.inst_button ').on('click',function(){
                         $('.inst').css({
                             'transform':'translateY(0)','z-index':'999'
                         });
@@ -48,6 +50,31 @@ html
                 });
 
                 //Leaderboard button: 
+                $(function(){ 
+                    $('.lead_button').on('click',function(){
+                        $('.lead').css({
+                            'transform':'translateY(-125%)','z-index':'800'
+                        });
+    
+                     $('body').addClass('overlay');
+
+    
+                     $(this).css({
+                        'z-index':'-1'
+                     });
+    
+                    $('.lead > .close').on('click',function(){
+                        $(this).parent().css({
+                            'transform':'translateY(-400%)'
+                        });
+     
+                        $('body').removeClass('overlay');
+                            $(this).parent().siblings('.btn').css({
+                                'z-index':'1'
+                            });
+                    });
+                    });
+                });
                 
                 //End draft
 
@@ -154,20 +181,20 @@ html
     <body>
         <div class="content">
         <div id='header'>
-            <img src="http://i63.tinypic.com/2edp7aw.png" alt="LOGO" width="25%" align="middle">
+            <img src="http://i68.tinypic.com/9bhxqg.png" alt="LOGO" width="25%" align="middle">
         </div>
         <div id='buttons'>
-            <button class="inst_button"> Instructions </button>
-            <button class="lead_button"> Leaderboard </button>
+            <button class="inst_button" > Instructions </button>
+            <button class="lead_button" > Leaderboard </button>
             <button class="toggle"> Mode Toggle </button>
             <div class="inst">
                 <h1> Instructions here </h1>
                 <div class="close"> X </div>
             </div>
-            //- <div class="lead">
-            //-     <h1> Leaderboard here </h1>
-            //-     <div class="close"> X </div>
-            //- </div>
+            <div class="lead">
+                <h1> Leaderboard here </h1>
+                <div class="close"> X </div>
+            </div>
         </div>
 
         <button id='start_game'>Start Game</button>
@@ -233,14 +260,17 @@ html
 
         <table id="div2" ondrop="drop(event)" ondragover="allowDrop(event)">
             <tr>
-                <th id="reactant"> </th>
-                <th id="reagent"> </th>
-                <th id="product"> </th>
+                <th class='sub_box' id="reactant"> </th>
+                <th class='symbol' id="plus">+ </th>
+                <th class='sub_box' id="reagent"> </th>
+                <th class='symbol' id="arrow">=</th>
+                <th class='sub_box' id="product"> </th>
             </tr>
         </table>
         <div id='submit'>
             <button id='check'>Submit</button>
             <button id='clear_answers' style='display: none;'>Clear</button>
+            <button class='submit' id='check'>Submit</button>
         </div>
         <div id="score"></div>
         <div id="result"></div>

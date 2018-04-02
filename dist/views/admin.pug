@@ -1,5 +1,7 @@
 html
     head
+        style
+            include admin.css
         script(src='https://code.jquery.com/jquery-latest.min.js')
         script(type='text/javascript').
             $(document).ready(function() {
@@ -7,11 +9,29 @@ html
                     e.preventDefault();
 
                     //remove previous image depictions
-                    $('#depiction').empty();
+                    
+                    if ($('#reactant-img').children().length == 0) {
+                        $('#reactant-img').empty();
+                    }
+                    if ($('#reagent-img').children().length == 0) {
+                        $('#reagent-img').empty();
+                    }
+                    if ($('#product-img').children().length == 0) {
+                        $('#product-img').empty();
+                    }
+                    if ($('#reactant-img').children().length == 1 
+                    && $('#reagent-img').children().length == 1
+                    && $('#product-img').children().length == 1) {
+                        $('#reactant-img').empty();
+                        $('#reagent-img').empty();
+                        $('#product-img').empty();
+                    }
+                    
+
                     var data = {
-                        chem1: $('#chem1').val(),
-                        chem2: $('#chem2').val(),
-                        chem3: $('#chem3').val()
+                        reactant: $('#reactant').val(),
+                        reagent: $('#reagent').val(),
+                        product: $('#product').val()
                     };
                     $.ajax({
                         url:'/getImage',
@@ -24,23 +44,63 @@ html
 
                         //Append depictions to page
                         var json_obj = JSON.parse(response);
-                        $('#depiction').append($("<img id='chem1_src'src=" + json_obj['chem1'] + ">"));
-                        $('#depiction').append($("<img id='chem2_src'src=" + json_obj['chem2'] + ">"));
-                        $('#depiction').append($("<img id='chem3_src'src=" + json_obj['chem3'] + ">"));
+                        if ($('#reactant-img').children().length == 0) {
+                            $('#reactant-img').append($("<img id='reagent_src'src=" + json_obj['reactant'] + ">"));
+                        }
+                        if ($('#reagent-img').children().length == 0) {
+                            $('#reagent-img').append($("<img id='reactant_src'src=" + json_obj['reagent'] + ">"));
+                        }
+                        if ($('#product-img').children().length == 0 ) {
+                            $('#product-img').append($("<img id='product_src'src=" + json_obj['product'] + ">"));
+                        }
 
                         //Save depictions to database ---IN PROGRESS------
                     });
                 });
+
+                //image upload 
+                $('form input#reactant-upload').change( function() {
+                    $('#reactant-img').empty();
+                    var imgFile = window.URL.createObjectURL(this.files[0]);
+                    $('#reactant-img').append($("<img id='reactant_src' src=" + imgFile + ">"));
+                });
+
+                $('form input#reagent-upload').change( function() {
+                    $('#reagent-img').empty();
+                    var imgFile = window.URL.createObjectURL(this.files[0]);
+                    $('#reagent-img').append($("<img id='reagent_src' src=" + imgFile + ">"));
+                });
+
+                $('form input#product-upload').change( function() {
+                    $('#product-img').empty();
+                    var imgFile = window.URL.createObjectURL(this.files[0])
+                    $('#product-img').append($("<img id='product_src' src=" + imgFile + ">"));
+                });
+
             });
     body
         h1= title
-        <p>Enter a chemical name to see its depiction</p>
-        <form action='/image' id='nameToDepiction' method="POST">
-            <input type='text' name='name' id='chem1' placeholder='chem1' />
-            <input type='text' name='name' id='chem2' placeholder='reagent' />
-            <input type='text' name='name' id='chem3' placeholder='reaction' />
-            <input type='submit' value='Submit' />
+        <p>Insert Reactions Here: <br>Enter a chemical reaction to see its depiction or add your own images</p>
+
+        <div id='depiction'>
+            <div class='image' id='reactant-img'></div>
+            <div class='image' id='reagent-img'></div>
+            <div class='image' id='product-img'></div>
+        </div>
+
+        <form action='' id='upload' method='POST'>
+            <input type='file' name='file' id='reactant-upload' accept='.png' />
+            <input type='file' name='file' id='reagent-upload' accept='.png' />
+            <input type='file' name='file' id='product-upload' accept='.png' />
         </form>
+
+        <form action='' id='nameToDepiction' method="POST">
+            <input type='text' name='name' id='reactant' placeholder='reactant' />
+            <input type='text' name='name' id='reagent' placeholder='reagent' />
+            <input type='text' name='name' id='product' placeholder='reaction' />
+            <input type='submit' value='Check' />
+        </form>
+
         <p>Some to try (not actual reactions):</p>
         <ul>
             <li>2,4,6-trinitrotoluene</li>
@@ -50,5 +110,3 @@ html
             <li>amphetamine</li>
             <li>whatever else you think of</li>
         </ul>
-        <p>Depictions will appear here:</p>
-        <div id='depiction'></div>
