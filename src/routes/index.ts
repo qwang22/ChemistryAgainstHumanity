@@ -160,9 +160,9 @@ export class IndexRoute extends BaseRoute {
         console.log(req.body)
 
         //for storing to local db
-        //var host = "mongodb://localhost:27017";
+        var host = "mongodb://localhost:27017";
         //for storing to blade db
-        var host = "mongodb://152.2.133.33:27017";
+        //var host = "mongodb://152.2.133.33:27017";
         mongo.MongoClient.connect(host, function(err, db) {
             if (err) throw err;
             var dbo = db.db("chemistryagainsthumanity");
@@ -205,7 +205,7 @@ export class IndexRoute extends BaseRoute {
     }
 	
     public generateCards(req: Request, res: Response, next: NextFunction) {
-        mongo.MongoClient.connect("mongodb://152.2.133.33:27017", function(err, db) {
+        mongo.MongoClient.connect("mongodb://localhost:27017", function(err, db) {
             if (err) throw err;
             var dbo = db.db("chemistryagainsthumanity");
 
