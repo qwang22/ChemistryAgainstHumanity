@@ -233,7 +233,7 @@ p{
     margin-left: 20%;
 }
 
-.inst_button, .lead_button, .toggle, #submit{
+.inst_button, .lead_button, .toggle, #submit, #start_game{
     -webkit-transform:scale(1);
     -ms-transform:scale(1);
     transform:scale(1);
@@ -251,11 +251,11 @@ p{
     margin-top: 5px;
 }
 
-.inst_button:focus, #submit:focus, .lead_button:focus, .toggle:focus{
+.inst_button:focus, #submit:focus, .lead_button:focus, .toggle:focus, #start_game:focus{
     outline:none;
 }
 
-.inst_button:hover, #submit:hover, .lead_button:hover, .toggle:hover{
+.inst_button:hover, #submit:hover, .lead_button:hover, .toggle:hover, #start_game:hover{
     -webkit-transform:scale(1.2);
   transform:scale(1.2);
   background:#24C6DC;
