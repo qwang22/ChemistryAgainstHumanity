@@ -98,6 +98,8 @@ html
                         e.preventDefault();
 
                         $('#div1').show();
+                        $('#div2').show();
+                        $('#submit').show();
                         $('#start_game').hide();
 
                         $.ajax({
@@ -258,7 +260,7 @@ html
             </tr>
         </table>
 
-        <table id="div2" ondrop="drop(event)" ondragover="allowDrop(event)">
+        <table id="div2" style="display: none;" ondrop="drop(event)" ondragover="allowDrop(event)">
             <tr>
                 <th class='sub_box' id="reactant"> </th>
                 <th class='symbol' id="plus">+ </th>
@@ -267,10 +269,10 @@ html
                 <th class='sub_box' id="product"> </th>
             </tr>
         </table>
-        <div id='submit'>
+        <div id='submit' style="display: none;">
             <button id='check'>Submit</button>
             <button id='clear_answers' style='display: none;'>Clear</button>
-            <button class='submit' id='check'>Submit</button>
+            //-<button class='submit' id='check'>Submit</button>
         </div>
         <div id="score"></div>
         <div id="result"></div>
