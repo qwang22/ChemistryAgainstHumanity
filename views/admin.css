@@ -5,7 +5,6 @@ div > div.image {
     text-align: center;
     vertical-align: middle;
     margin: 10px;
-    border: dashed;
 }
 
 div.image > img {
@@ -16,4 +15,17 @@ form > input {
     display: inline-block;
     width: 25%;
     margin: 10px;
+}
+
+.dropzone .dz-preview .dz-image {
+    overflow: auto;
+    width: auto;
+    height: auto;
+}
+
+button.x {
+   float: right;
+   cursor: pointer;
+   border: solid #AEAEAE;
+   background: #605F61;
 }
