@@ -6,6 +6,7 @@ html
         script
             include dropzone.js
         script(src='https://code.jquery.com/jquery-latest.min.js')
+        script(src='https://cdnjs.cloudflare.com/ajax/libs/crypto-js/3.1.2/rollups/aes.js')
         script(type='text/javascript').
             Dropzone.autoDiscover = false;
             $(document).ready(function() {
@@ -73,40 +74,54 @@ html
                 $('#confirm').click( function(e) {
                     e.preventDefault();
                     console.log("you clicked the confirm button");
+                    
+                    var auth_prompt = window.prompt("Enter password");
 
-                    var cards = {
-                        reactant: {
-                            front: $('#reactant-img img').attr('src'),
-                            back: $('#reactant').val()
-                        },
-                        reagent: {
-                            front: $('#reagent-img img').attr('src'),
-                            back: $('#reagent').val()
-                        },
-                        product: {
-                            front: $('#product-img img').attr('src'),
-                            back: $('#product').val()
-                        }
-                    }
+                    var encrypted = CryptoJS.AES.encrypt(auth_prompt, "pw");
+                    var decrypted = CryptoJS.AES.decrypt(encrypted, "pw");
+                    
+                    //only allow upload to database if correct pw is entered
+                    if (decrypted.toString() == "61646d696e") {
+                        console.log("password correct");
 
-                    $.ajax({
-                        url: '/addReaction',
-                        data: cards,
-                        method: 'POST',
-                        error: function(response) {
-                            console.log('error in ajax call');
+                        var cards = {
+                            reactant: {
+                                front: $('#reactant-img img').attr('src'),
+                                back: $('#reactant').val()
+                            },
+                            reagent: {
+                                front: $('#reagent-img img').attr('src'),
+                                back: $('#reagent').val()
+                            },
+                            product: {
+                                front: $('#product-img img').attr('src'),
+                                back: $('#product').val()
+                            }
                         }
-                    }).then( function(response) {
-                        console.log('done');
+
+                        $.ajax({
+                            url: '/addReaction',
+                            data: cards,
+                            method: 'POST',
+                            error: function(response) {
+                                console.log('error in ajax call');
+                            }
+                        }).then( function(response) {
+                            console.log('done');
+                            $('#confirm').hide();
+                        });
+
+                        alert("Reaction uploaded");
+                        $('#depiction img').remove();
+                        $('#depiction .dz-preview').remove();
+                        $('#depiction .dropzone').removeClass("dz-started");
+                        $('#depiction .dz-message').show()
                         $('#confirm').hide();
-                    });
-
-                    alert("Reaction uploaded");
-                    $('#depiction img').remove();
-                    $('#depiction .dz-preview').remove();
-                    $('#depiction .dropzone').removeClass("dz-started");
-                    $('#depiction .dz-message').show()
-                    $('#nameToDepiction')[0].reset();
+                        $('#clear').hide();
+                        $('#nameToDepiction')[0].reset();
+                    } else {
+                        alert("Password incorrect.  Upload failed.");
+                    }
                 });
 
                 $('#clear').click( function(e) {
@@ -115,6 +130,7 @@ html
                     $('#depiction .dz-preview').remove();
                     $('#depiction .dropzone').removeClass("dz-started");
                     $('#depiction .dz-message').show();
+                    $('#confirm').hide()
                     $('#nameToDepiction')[0].reset();
                     $(this).hide();
                 });
