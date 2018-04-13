@@ -87,17 +87,52 @@ html
                       c.flip({axis:'y', trigger:'click'});
                     //test 2nd column 
                 
-                
                     var getOriginalPosition = function() {
                         $('#div1 img').each( function() {
                             //original position = row#column#
-                            //var op = $(this).parent().attr('id');
-                            var op = $(this).parents().eq(2).attr('id');
+                            var op = $(this).parent().closest('th').attr('id');
                             $(this).attr('data-op', op);
                         });
                     }
+                    $('#start_game').click(function(e) {
+                        e.preventDefault();
 
-                    getOriginalPosition();
+                        $('#div1').show();
+                        $('#div2').show();
+                        $('#submit').show();
+                        $('#start_game').hide();
+
+                        $.ajax({
+                            url: '/generateCards',
+                            data: {request: "req"},
+                            method: 'POST',
+                            error: function(response) {
+                                console.log("error in ajax call")
+                                console.log(response)
+                            }
+                        }).then( function(response) {
+                            //response will be json object of 16 cards from db
+                            var cards = JSON.parse(response);
+
+                            var row_num = 1;
+                            var col_num = 1;
+                            for (var i = 0;i < cards.length;i++) {
+                                //table_pos = r#c#
+                                var table_pos = 'r' + row_num + 'c' + col_num;
+                                $('#div1 th#' + table_pos + ' .card .front').append($("<img id=" + cards[i]['_id'] + 
+                                                                " data-rid=" + cards[i]['rid'] + " data-type=" + cards[i]['type'] +
+                                                                " src=" + cards[i]['front'] + 
+                                                                " alt=" + cards[i]['back'] + " draggable='true' ondragstart='drag(event)'>"));
+                                $('#div1 th#' + table_pos + ' .card .back').append($("<p>" + cards[i]['back'] + "</p>"));
+                                col_num++;
+                                if (col_num == 5) {
+                                    col_num = 1;
+                                    row_num++;
+                                }
+                            }
+                            getOriginalPosition();
+                        });
+                    })
                     
                     var score = 0;
                     $('#check').on("click", function(e) {
@@ -106,33 +141,41 @@ html
                         //remove previous answer check
                         $('#result').empty();
                         $('#score').empty();
-                        var reactant = $('#reactant').children('img').attr('id');
-                        var reagent = $('#reagent').children('img').attr('id');
-                        var product = $('#product').children('img').attr('id');
+
+                        var reactant = $('#reactant').children('img');
+                        var reagent = $('#reagent').children('img');
+                        var product = $('#product').children('img');
 
                         //check answer
-                        if ((reactant == "drag1" && reagent == "drag2" && product == "drag3")
-                        || (reactant == "drag4" && reagent == "drag5" && product == "drag6")
-                        || (reactant == "drag7" && reagent == "drag8" && product == "drag9")) {
+                        if (reactant.attr('data-type') == 'reactant' &&
+                            reagent.attr('data-type') == 'reagent' &&
+                            product.attr('data-type') == 'product' &&
+                            reactant.attr('data-rid') == reagent.attr('data-rid') &&
+                            reagent.attr('data-rid') == product.attr('data-rid')) {
                             score++;
-                            $('#result').append("<p>Correct</p>")
                             $('#score').append("<p>Score: "+score+"</p>")
-                        } else {
-                            score--;
-                            $('#result').append("<p>Incorrect</p>")
-                            $('#score').append("<p>Score: "+score+"</p>");
-                        }
-                        $('#result').append($("<button id='clear_answers'>Clear</button>"));
-                        
-                         //clear answer choices and return to original position 
-                            $('#clear_answers').on("click", function(e) {
-                                e.preventDefault();
-                                //appends card to previous table position (row#column#)
+                            $('#result').append("<p>Correct</p>")
+                            //returns cards to previous positions
+                            setTimeout(function() {
                                 $('#div2 img').each( function() {
                                     $('#' + $(this).attr('data-op') + ' .front').append($(this));
                                 });
-                                $('#result').empty();
-                            });
+                                $('#result').empty()}, 1500);
+                        } else {
+                            score--;
+                            $('#score').append("<p>Score: "+score+"</p>");
+                            $('#result').append("<p>Incorrect</p>");
+                            $('#clear_answers').show();
+                        }
+                    });
+
+                    $('#clear_answers').on("click", function(e) {
+                        //returns cards to previous positions (row#column#)
+                        $('#div2 img').each( function() {
+                            $('#' + $(this).attr('data-op') + ' .front').append($(this));
+                        });
+                        $('#result').empty();
+                        $(this).hide();
                     });
                     
                 });
@@ -151,127 +194,105 @@ html
                 <div class="close"> X </div>
             </div>
             <div class="lead">
-                <h1> Leaderboard here </h1>
+                //- <h1> Leaderboard here</h1>
                 <div class="close"> X </div>
+                <table class = leaderB>
+                <tr>
+                    <th>Spot<th>
+                    <th>Name<th>
+                    <th>Points<th>
+                </tr>
+                <tr>
+                    <th>1<th>
+                    <th>Player <th>
+                    <th>13<th>
+                </tr>
+                <tr>
+                    <th>2<th>
+                    <th>Jeffrey Young<th>
+                    <th>8<th>
+                </tr>
+                <tr>
+                    <th>3<th>
+                    <th>Qian Wang<th>
+                    <th>7<th>
+                </tr>
+                <tr>
+                    <th>4<th>
+                    <th>Sarah Renfo<th>
+                    <th>6<th>
+                </tr>
+                <tr>
+                    <th>5<th>
+                    <th>Steveen Vargas<th>
+                    <th>5<th>
+                </tr>
+                </table>
             </div>
         </div>
 
-        <!-- Currently displayed that each row is a solution -->
-        <table id="div1" ondrop="drop(event)" ondragover="allowDrop(event)">
+        <button id='start_game'>Start Game</button>
+
+        <table id='div1' style='display:none;' ondrop='drop(event)' ondragover='allowDrop(event)'>
             <tr>
                 <th id='r1c1'>
-                    <div class="card">
-                        <div class="front">
-                            <img src="http://opsin.ch.cam.ac.uk/opsin/butyric%20acid.png" alt="butyric acid" draggable="true" ondragstart="drag(event)" id="drag1">
-                        </div> 
-                        <div class="back">
-                            <p> butyric acid</p>
-                        </div>
-                    </div> 
+                    <div class='card'><div class='front'></div><div class='back'></div></div>
                 </th>
                 <th id='r1c2'>
-                    <div class="card">
-                        <div class="front">
-                            <img src="http://opsin.ch.cam.ac.uk/opsin/thionyl%20chloride.png" alt="thionyl chloride" draggable="true" ondragstart="drag(event)" id="drag2">
-                        </div> 
-                        <div class="back">
-                            <p> thionyl chloride</p>
-                        </div>
-                    </div>
+                    <div class='card'><div class='front'></div><div class='back'></div></div>
                 </th>
                 <th id='r1c3'>
-                    <div class="card">
-                        <div class="front">
-                             <img src="http://opsin.ch.cam.ac.uk/opsin/butyryl%20chloride.png" alt="butyryl chloride" draggable="true" ondragstart="drag(event)" id="drag3">
-                        </div> 
-                        <div class="back">
-                            <p> butyryl chloride</p>
-                        </div>
-                    </div>
+                    <div class='card'><div class='front'></div><div class='back'></div></div>
                 </th>
                 <th id='r1c4'>
-                    <p> Placeholder </p>
+                    <div class='card'><div class='front'></div><div class='back'></div></div>
                 </th>
             </tr>
-            <tr> 
+            <tr>
                 <th id='r2c1'>
-                    <div class="card">
-                        <div class="front">
-                             <img src="http://opsin.ch.cam.ac.uk/opsin/butyryl%20chloride.png" alt="butyryl chloride" draggable="true" ondragstart="drag(event)" id="drag4">
-                        </div> 
-                        <div class="back">
-                            <p> butyryl chloride</p>
-                        </div>
-                    </div>
+                    <div class='card'><div class='front'></div><div class='back'></div></div>
                 </th>
                 <th id='r2c2'>
-                    <div class="card">
-                        <div class="front">
-                             <img src="http://opsin.ch.cam.ac.uk/opsin/sodium%20methoxide.png" alt="sodium methoxide" draggable="true" ondragstart="drag(event)" id="drag5">
-                        </div> 
-                        <div class="back">
-                            <p>sodium methoxide</p>
-                        </div>
-                    </div>
+                    <div class='card'><div class='front'></div><div class='back'></div></div>
                 </th>
                 <th id='r2c3'>
-                    <div class="card">
-                        <div class="front">
-                             <img src="http://opsin.ch.cam.ac.uk/opsin/methyl%20butyrate.png" alt="methyl butyrate" draggable="true" ondragstart="drag(event)" id="drag6">
-                        </div> 
-                        <div class="back">
-                            <p>methyl butyrate</p>
-                        </div>
-                    </div>                    
+                    <div class='card'><div class='front'></div><div class='back'></div></div>
                 </th>
                 <th id='r2c4'>
-                    <p> Placeholder </p>
+                    <div class='card'><div class='front'></div><div class='back'></div></div>
                 </th>
             </tr>
             <tr>
                 <th id='r3c1'>
-                    <div class="card">
-                        <div class="front">
-                            <img src="http://opsin.ch.cam.ac.uk/opsin/1-butanol.png" alt="1-butanol" draggable="true" ondragstart="drag(event)" id="drag7">
-                        </div> 
-                        <div class="back">
-                            <p>1-butanol</p>
-                        </div>
-                    </div> 
+                    <div class='card'><div class='front'></div><div class='back'></div></div>
                 </th>
                 <th id='r3c2'>
-                    <div class="card">
-                        <div class="front">
-                            <img src="http://opsin.ch.cam.ac.uk/opsin/pyridinium%20chlorochromate.png" alt="pyridinium chlorochromate" draggable="true" ondragstart="drag(event)" id="drag8"> 
-                        </div> 
-                        <div class="back">
-                            <p>pyridinium chlorochromate</p>
-                        </div>
-                    </div>  
+                    <div class='card'><div class='front'></div><div class='back'></div></div>
                 </th>
                 <th id='r3c3'>
-                    <div class="card">
-                        <div class="front">
-                            <img src="http://opsin.ch.cam.ac.uk/opsin/butyraldehyde.png" alt="butyraldehyde" draggable="true" ondragstart="drag(event)" id="drag9"> 
-                        </div> 
-                        <div class="back">
-                            <p>butyraldehyde</p>
-                        </div>
-                    </div> 
+                    <div class='card'><div class='front'></div><div class='back'></div></div>
                 </th>
                 <th id='r3c4'>
-                    <p> Placeholder </p>
+                    <div class='card'><div class='front'></div><div class='back'></div></div>
                 </th>
             </tr>
             <tr>
-                <th id='r4c1'> <p> Placeholder </p></th>
-                <th id='r4c2'><p> Placeholder </p></th>
-                <th id='r4c3'><p> Placeholder </p></th>
-                <th id='r3c4'><p> Placeholder </p></th>
+                <th id='r4c1'>
+                    <div class='card'><div class='front'></div><div class='back'></div></div>
+                </th>
+                <th id='r4c2'>
+                    <div class='card'><div class='front'></div><div class='back'></div></div>
+                </th>
+                <th id='r4c3'>
+                    <div class='card'><div class='front'></div><div class='back'></div></div>
+                </th>
+                <th id='r4c4'>
+                    <div class='card'><div class='front'></div><div class='back'></div></div>
+                </th>
             </tr>
         </table>
 
-        <table id="div2" ondrop="drop(event)" ondragover="allowDrop(event)">
+        <table id="div2" style="display: none;" ondrop="drop(event)" ondragover="allowDrop(event)">
             <tr>
                 <th class='sub_box' id="reactant"> </th>
                 <th class='symbol' id="plus">+ </th>
@@ -280,10 +301,19 @@ html
                 <th class='sub_box' id="product"> </th>
             </tr>
         </table>
-        <div id='submit'>
-            <button class='submit' id='check'>Submit</button>
+        <div id='submit' style="display: none;">
+            <button id='check'>Submit</button>
+            <button id='clear_answers' style='display: none;'>Clear</button>
+            //-<button class='submit' id='check'>Submit</button>
         </div>
+        <div id="score"></div>
         <div id="result"></div>
-        <div id='score'></div>
         </div>
+
+        <form action='/'>
+            <input type='submit' value='Home Page' />
+        </form>
+        <form action='/admin'>
+            <input type='submit' value='Admin Page' />
+        </form>
     </body>

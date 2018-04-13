@@ -4,7 +4,7 @@ body {
     /*(font-family: 'Merriweather';*/
     background: linear-gradient(to right, rgba(12, 88, 160, 0.863), #24C6DC);
     height: 100%;
-    overflow: hidden;
+    /*overflow: hidden;*/
 }
 .content{
     width:100%;
@@ -116,8 +116,6 @@ ul li img {
     top:50%;
     transform: translate(0, -50%);
     align-content: center;
-    width: 100%;
-
 }
 
 .card{
@@ -210,9 +208,19 @@ p{
     
 }
 
+.card img {
+    width:75%;
+    height:75%;
+    margin-top: 10%;
+    background-color: solid white;
+    top: 50%;
+    /* transform: translateY(-50%); */
+    
+}
+
 /*Popup Begin */
 
-#buttons{
+#buttons, #start_game {
     width: 60%;
     height: 35px;
     margin-left: 20%;
@@ -220,7 +228,12 @@ p{
     float: left;
 }
 
-.inst_button, .lead_button, .toggle, .submit{
+#start_game {
+    width: 25%;
+    margin-left: 38%;
+}
+
+.inst_button, .lead_button, .toggle, #submit, #start_game{
     -webkit-transform:scale(1);
     -ms-transform:scale(1);
     transform:scale(1);
@@ -238,11 +251,11 @@ p{
     margin-top: 5px;
 }
 
-.inst_button:focus, .submit:focus, .lead_button:focus, .toggle:focus{
+.inst_button:focus, #submit:focus, .lead_button:focus, .toggle:focus, #start_game:focus{
     outline:none;
 }
 
-.inst_button:hover, .submit:hover, .lead_button:hover, .toggle:hover{
+.inst_button:hover, #submit:hover, .lead_button:hover, .toggle:hover, #start_game:hover{
     -webkit-transform:scale(1.2);
   transform:scale(1.2);
   background:#24C6DC;
@@ -251,7 +264,7 @@ p{
 box-shadow: 0px 0px 20px rgba(56,56,56,.2);
 }
 
-.inst, .lead{
+.inst{
     display:block;
     width:500px;
     height:250px;
@@ -272,6 +285,38 @@ box-shadow: 0px 0px 20px rgba(56,56,56,.2);
     -webkit-transition: all 900ms cubic-bezier(0.68, -0.55, 0.265, 1.55);
     transition: all 900ms cubic-bezier(0.68, -0.55, 0.265, 1.55);
   }
+
+  .lead{
+    display:block;
+    width:500px;
+    height:400px; /* do not go above 400px for now */
+    background:#fff;
+    border-radius:5px;
+    margin:80px auto;
+    z-index:999;
+    overflow-y: scroll; /* allowing scroll option */
+    -webkit-transform:translateY(-400%);
+    transform:translateY(-400%);
+    -moz-box-shadow: 0px 0px 20px rgba(56,56,56,.2);
+  -webkit-box-shadow: 0px 0px 20px rgba(56,56,56,.2);
+  box-shadow: 0px 0px 20px rgba(56,56,56,.2);
+    text-align:center;
+    line-height:7em;
+    font-size:2em;
+    position:relative;
+    -webkit-transition: all 900ms cubic-bezier(0.68, -0.55, 0.265, 1.55);
+    transition: all 900ms cubic-bezier(0.68, -0.55, 0.265, 1.55);
+  }
+
+  /* .leaderB{
+      width: 450px;
+      height: 100px;
+
+  } */
+  /* tookout from lead 
+   out: overflow:hidden;
+   added: overflow-y: scroll;
+  */
 
 .sub_box{
     border: dashed;
