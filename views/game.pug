@@ -81,6 +81,8 @@ html
                 $(document).ready(function() {
 
                     //- hard code user, use notes, YOU CAN START HERE
+                    var deck;
+                    var nextToDraw = 16; //index of next card to draw
 
                     let c = $(".card"); //flipping the images
                     c.flip({axis:'y', trigger:'click'});
@@ -95,6 +97,48 @@ html
                             var op = $(this).parent().closest('th').attr('id');
                             $(this).attr('data-op', op);
                         });
+                    }
+
+                    var shuffle = function(deck) {
+                        for (var i=0; i<deck.length; i++) {
+                            var shuffle_pos = Math.floor((deck.length - i) * Math.random()) + i;
+                            var tmp = deck[i];
+                            deck[i] = deck[shuffle_pos];
+                            deck[shuffle_pos] = tmp;
+                        }
+                    }
+
+                    var drawCards = function(numToDraw) {
+                        //if no more cards left in deck
+                        if (nextToDraw + numToDraw > deck.length) {
+                            return;
+                        }
+                        var drawnCards = [];
+                        for (var i=0; i<numToDraw; i++) {
+                            drawnCards.push(deck[nextToDraw]);
+                            nextToDraw++;
+                        }
+                        return drawnCards;
+                    }
+
+                    var makeCard = function(card) {
+                        return $("<img id=" + card['_id'] + " data-rid=" + card['rid'] + 
+                                " data-type=" + card['type'] + " src=" + card['front'] + 
+                                " alt=" + card['back'] + " draggable='true' ondragstart='drag(event)'>");
+                    }
+
+                    //should use this function, but cards css is not applied
+                    var makeCard2 = function(card) {
+                        return $("<div class='card'>" + 
+                                    "<div class='front'>" + 
+                                        "<img id=" + card['_id'] + " data-rid=" + card['rid'] + 
+                                        " data-type=" + card['type'] + " src=" + card['front'] + 
+                                        " alt=" + card['back'] + " draggable='true' ondragstart='drag(event)'>" + 
+                                    "</div>" +
+                                    "<div class='back'>" + 
+                                        "<p>" + card['back'] + "</p>" + 
+                                    "</div>" + 
+                                "</div>");
                     }
                     $('#start_game').click(function(e) {
                         e.preventDefault();
@@ -113,19 +157,19 @@ html
                                 console.log(response)
                             }
                         }).then( function(response) {
-                            //response will be json object of 16 cards from db
-                            var cards = JSON.parse(response);
+                            //response will be json object of all cards from db
+                            deck = JSON.parse(response);
+                            shuffle(deck);
+                            //var deck = JSON.parse(response);
 
                             var row_num = 1;
                             var col_num = 1;
-                            for (var i = 0;i < cards.length;i++) {
+                            for (var i = 0;i < 16;i++) {
                                 //table_pos = r#c#
                                 var table_pos = 'r' + row_num + 'c' + col_num;
-                                $('#div1 th#' + table_pos + ' .card .front').append($("<img id=" + cards[i]['_id'] + 
-                                                                " data-rid=" + cards[i]['rid'] + " data-type=" + cards[i]['type'] +
-                                                                " src=" + cards[i]['front'] + 
-                                                                " alt=" + cards[i]['back'] + " draggable='true' ondragstart='drag(event)'>"));
-                                $('#div1 th#' + table_pos + ' .card .back').append($("<p>" + cards[i]['back'] + "</p>"));
+                                //$('#div1 th#' + table_pos).append(makeCard2(deck[i]));
+                                $('#div1 th#' + table_pos + ' .card .front').append(makeCard(deck[i]));
+                                $('#div1 th#' + table_pos + ' .card .back').append($("<p>" + deck[i]['back'] + "</p>"));
                                 col_num++;
                                 if (col_num == 5) {
                                     col_num = 1;
@@ -134,7 +178,7 @@ html
                             }
                             getOriginalPosition();
                         });
-                    })
+                    });
                     
                     var score = 0;
                     $('#check').on("click", function(e) {
@@ -149,6 +193,7 @@ html
                         var product = $('#product').children('img');
 
                         //check answer
+                        // if correct
                         if (reactant.attr('data-type') == 'reactant' &&
                             reagent.attr('data-type') == 'reagent' &&
                             product.attr('data-type') == 'product' &&
@@ -157,11 +202,19 @@ html
                             score++;
                             $('#score').append("<p>Score: "+score+"</p>")
                             $('#result').append("<p>Correct</p>")
-                            //returns cards to previous positions
+                            //draw new cards to replace
+                            var newCards = drawCards(3);
+                            console.log(newCards);
+                            var j = 0;
+                            //append new cards to grid and clear old cards
                             setTimeout(function() {
                                 $('#div2 img').each( function() {
-                                    $('#' + $(this).attr('data-op') + ' .front').append($(this));
+                                    //$('#' + $(this).attr('data-op')).append(makeCard2(newCards[j]));
+                                    $('#' + $(this).attr('data-op') + ' .card .front').append(makeCard(newCards[j]));
+                                    $('#' + $(this).attr('data-op') + ' .card .back').append($("<p>" + newCards[j]['back'] + "</p>"))
+                                    j++;
                                 });
+                                $('#div2 .sub_box').empty();
                                 $('#result').empty()}, 1500);
                         } else {
                             score--;
