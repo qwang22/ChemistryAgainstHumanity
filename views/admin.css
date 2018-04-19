@@ -34,7 +34,7 @@ button.x {
 body {
     background: linear-gradient(to right, rgba(12, 88, 160, 0.863), #24C6DC);
     height: 100%;
-    overflow: hidden;
+    /*overflow: hidden;*/
     align-content: center;
     width: 100%;
 }
