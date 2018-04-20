@@ -3,7 +3,7 @@ html
         link(href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.3.0/css/font-awesome.css" rel="stylesheet"  type='text/css')
         style
             include css/game.css
-        script(src='https://code.jquery.com/jquery-latest.min.js')
+        script(src='http://code.jquery.com/jquery-latest.min.js')
         script(src='https://cdn.rawgit.com/nnattawat/flip/master/dist/jquery.flip.min.js')
         script(type='text/javascript').
                 function allowDrop(ev) {
@@ -80,8 +80,8 @@ html
 
                 $(document).ready(function() {
 
-                    //- hard code user, use notes, YOU CAN START HERE
                     var deck;
+                    var solutions;
                     var nextToDraw = 16; //index of next card to draw
 
                     let c = $(".card"); //flipping the images
@@ -109,9 +109,13 @@ html
                     }
 
                     var drawCards = function(numToDraw) {
-                        //if no more cards left in deck
-                        if (nextToDraw + numToDraw > deck.length) {
+                        //if no cards left
+                        if (nextToDraw == deck.length) {
                             return;
+                        }
+                        //if less than 3 cards left in deck
+                        if (nextToDraw + numToDraw > deck.length) {
+                            numToDraw = deck.length - nextToDraw;
                         }
                         var drawnCards = [];
                         for (var i=0; i<numToDraw; i++) {
@@ -121,10 +125,17 @@ html
                         return drawnCards;
                     }
 
+                    /*
                     var makeCard = function(card) {
                         return $("<img id=" + card['_id'] + " data-rid=" + card['rid'] + 
                                 " data-type=" + card['type'] + " src=" + card['front'] + 
                                 " alt=" + card['back'] + " draggable='true' ondragstart='drag(event)'>");
+                    }
+                    */
+
+                    var makeCard = function(card) {
+                        return $("<img id=" + card['_id'] + " src=" + card['front'] + 
+                                " alt='" +card['back'] + "' draggable='true' ondragstart='drag(event)'>");
                     }
 
                     //should use this function, but cards css is not applied
@@ -139,6 +150,18 @@ html
                                         "<p>" + card['back'] + "</p>" + 
                                     "</div>" + 
                                 "</div>");
+                    }
+
+                    var checkAnswer = function(answer) {
+                        for (var i=0;i<solutions.length;i++) {
+                            if (answer['reactant'] == solutions[i]['reactant'] &&
+                            answer['reagent'] == solutions[i]['reagent'] &&
+                            answer['product'] == solutions[i]['product']) {
+                                solutions.splice(i, 1); //remove reaction from list of solutions
+                                return true;
+                            }
+                        }
+                        return false;
                     }
                     $('#start_game').click(function(e) {
                         e.preventDefault();
@@ -157,11 +180,10 @@ html
                                 console.log(response)
                             }
                         }).then( function(response) {
-                            //response will be json object of all cards from db
+                            //response is json object of all cards from db
                             deck = JSON.parse(response);
                             shuffle(deck);
-                            //var deck = JSON.parse(response);
-
+                            
                             var row_num = 1;
                             var col_num = 1;
                             for (var i = 0;i < 16;i++) {
@@ -178,6 +200,18 @@ html
                             }
                             getOriginalPosition();
                         });
+
+                        $.ajax({
+                            url: "/generateSolutions",
+                            data: {request: "req"},
+                            method: "POST",
+                            error: function(response) {
+                                console.log("error generating solutions");
+                            }
+                        }).then( function(response) {
+                            solutions = JSON.parse(response);
+
+                        })
                     });
                     
                     var score = 0;
@@ -188,17 +222,14 @@ html
                         $('#result').empty();
                         $('#score').empty();
 
-                        var reactant = $('#reactant').children('img');
-                        var reagent = $('#reagent').children('img');
-                        var product = $('#product').children('img');
+                        var answer = {
+                            reactant: $('#reactant').children('img').attr('alt'),
+                            reagent: $('#reagent').children('img').attr('alt'),
+                            product: $('#product').children('img').attr('alt')
+                        }
 
-                        //check answer
                         // if correct
-                        if (reactant.attr('data-type') == 'reactant' &&
-                            reagent.attr('data-type') == 'reagent' &&
-                            product.attr('data-type') == 'product' &&
-                            reactant.attr('data-rid') == reagent.attr('data-rid') &&
-                            reagent.attr('data-rid') == product.attr('data-rid')) {
+                        if (checkAnswer(answer)) {
                             score++;
                             $('#score').append("<p>Score: "+score+"</p>")
                             $('#result').append("<p>Correct</p>")
@@ -208,12 +239,18 @@ html
                             var j = 0;
                             //append new cards to grid and clear old cards
                             setTimeout(function() {
-                                $('#div2 img').each( function() {
-                                    //$('#' + $(this).attr('data-op')).append(makeCard2(newCards[j]));
-                                    $('#' + $(this).attr('data-op') + ' .card .front').append(makeCard(newCards[j]));
-                                    $('#' + $(this).attr('data-op') + ' .card .back').append($("<p>" + newCards[j]['back'] + "</p>"))
-                                    j++;
-                                });
+                                if (typeof(newCards) != "undefined") {
+                                    $('#div2 img').each( function() {
+                                        if (j < newCards.length) {
+                                            //$('#' + $(this).attr('data-op')).append(makeCard2(newCards[j]));
+                                            $('#' + $(this).attr('data-op') + ' .card .front').append(makeCard(newCards[j]));
+                                            $('#' + $(this).attr('data-op') + ' .card .back').empty();
+                                            $('#' + $(this).attr('data-op') + ' .card .back').append($("<p>" + newCards[j]['back'] + "</p>"));
+                                        j++;
+                                        }
+                                    });
+                                    getOriginalPosition();
+                                }
                                 $('#div2 .sub_box').empty();
                                 $('#result').empty()}, 1500);
                         } else {
