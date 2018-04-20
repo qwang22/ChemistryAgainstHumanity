@@ -80,6 +80,42 @@ html
 
                 $(document).ready(function() {
 
+                    var users = [];
+
+                    var user1 = {
+                        onyen:"qianqian",
+                        fname:"Qian",
+                        lname:"Wang",
+                        points: 10
+                    }
+                    var user2 = {
+                        onyen:"Jeffrey",
+                        fname:"Jeffrey",
+                        lname:"Young",
+                        points: 9
+                    }
+                    var user3 = {
+                        onyen:"Renfro",
+                        fname:"Sarah",
+                        lname:"Renfro",
+                        points: 8
+                    }
+                    var user4 = {
+                        onyen:"csv17",
+                        fname:"Steveen",
+                        lname:"Vargas",
+                        points: 7
+                    }
+
+                    users.push(user1,user2,user3,user4);
+
+                    for(i=0;i<=users.length;i++){
+                        j=i+1;
+                        $(".leaderB").append($("<tr><th>"+ j +
+                        "</th><th>"+ users[i]["fname"] + " " + users[i]["lname"] +
+                        "</th><th>" + users[i]["points"] + "</th></tr>"));
+                    }
+
                     var deck;
                     var solutions;
                     var nextToDraw = 16; //index of next card to draw
@@ -293,31 +329,6 @@ html
                     <th>Spot<th>
                     <th>Name<th>
                     <th>Points<th>
-                </tr>
-                <tr>
-                    <th>1<th>
-                    <th>Player <th>
-                    <th>13<th>
-                </tr>
-                <tr>
-                    <th>2<th>
-                    <th>Jeffrey Young<th>
-                    <th>8<th>
-                </tr>
-                <tr>
-                    <th>3<th>
-                    <th>Qian Wang<th>
-                    <th>7<th>
-                </tr>
-                <tr>
-                    <th>4<th>
-                    <th>Sarah Renfo<th>
-                    <th>6<th>
-                </tr>
-                <tr>
-                    <th>5<th>
-                    <th>Steveen Vargas<th>
-                    <th>5<th>
                 </tr>
                 </table>
             </div>
