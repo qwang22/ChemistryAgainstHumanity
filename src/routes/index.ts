@@ -2,7 +2,6 @@ import { NextFunction, Request, Response, Router } from "express";
 import { BaseRoute } from "./route";
 const https = require("https");
 import mongo = require("mongodb");
-const json2csv = require('json2csv').parse;
 const fs = require('fs');
 
 /**
@@ -261,9 +260,8 @@ export class IndexRoute extends BaseRoute {
             var dbo = db.db("chemistryagainsthumanity");
             dbo.collection("reactions_dummy").find({}).toArray(function(err, docs) {
                 var fields = ['_id', 'reactant', 'reagent', 'product', 'active'];
-                var data = json2csv({data: docs, fields: fields});
                 var path = 'dist/public/reactions.csv';
-                fs.writeFile(path, data, function(err, data) {
+                fs.writeFile(path, JSON.stringify(docs), function(err, data) {
                     if (err) throw err;
                     res.download(path);
                 });
