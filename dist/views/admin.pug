@@ -1,8 +1,8 @@
 html
     head
         style
-            include admin.css
-            include dropzone.css
+            include css/admin.css
+            include css/dropzone.css
         script
             include dropzone.js
         script(src='https://code.jquery.com/jquery-latest.min.js')
@@ -142,7 +142,24 @@ html
                     $('#' + parent).removeClass('dz-started');
                     $('#' + parent + ' .dz-preview').remove();
                     $('#' + parent + ' .dz-message').show();
-                })
+                });
+
+                $('button#export').click( function(e) {
+                    e.preventDefault();
+                    $.ajax({
+                        url: 'exportReactions',
+                        data: {req: 'req'},
+                        method: 'POST',
+                        error: function(response) {
+                            alert("error exporting reactions");
+                        }
+                    }).then( function(response) {
+                        $('#download').show();
+                        $('#download').click( function(e) {
+                            $(this).hide();
+                        });
+                    });
+                });
 
             });
     body
@@ -164,21 +181,50 @@ html
         <form action='' id='nameToDepiction' method="POST">
             <input type='text' name='name' id='reactant' placeholder='reactant' />
             <input type='text' name='name' id='reagent' placeholder='reagent' />
-            <input type='text' name='name' id='product' placeholder='reaction' />
+            <input type='text' name='name' id='product' placeholder='product' />
             <input type='submit' value='Check' />
         </form>
 
         <button id='confirm' style='display: none;'>Confirm</button>
         <button id='clear' style='display: none;'>Clear</button>
+        <br />
+        <button id='export'>Export Reactions</button>
+        <a href="reactions.csv"><button id='download' style='display: none;'>Download File</button></a>
+        <p>File export currently not properly formatted (all in 1 line)</p>
+        <br />
 
-        <p>Some to try (not actual reactions):</p>
-        <ul>
-            <li>2,4,6-trinitrotoluene</li>
-            <li>cyclopropane</li>
-            <li>acetate</li>
-            <li>glucose</li>
-            <li>amphetamine</li>
-        </ul>
+        <div id='instructions'>
+            <p>Status: Dr. Moy, please do not upload reactions at this time</p>
+            <p>--Dummy database in use--</p>
+            </br /><br />
+            <p>Instructions to upload</p>
+            <p>Method 1: Search</p>
+            <ul>
+                <li>Enter names of chemical structures in the corresponding "reactant", "reagent", and "product" text boxes</li>
+                <li>Click 'check'</li>
+                <li>If incorrect, you may click the "x" to remove an individual image, or "clear" to remove all the images</li>
+                <li>If correct, click confirm</li>
+                <li>Enter password, and reaction will be uploaded</li>
+            </ul>
+            <br /><br />
+            <p>Method 2: Upload</p>
+            <ul>
+                <li>Click or drag and drop .png files into the "reactant", "reagent", and "product" boxes</li>
+                <li>*IMPORTANT* In the corresponding text boxes under each image, type in the name for each structure</li>
+                <li>Click 'check', then click 'confirm' and enter password</li>
+            </ul>
+            <br /><br />
+            <p>Method 3: Both</p>
+            <ul>
+                <li>Click or drag and drop .png files into the boxes you wish to upload an image for</li>
+                <li>In the corresponding text boxes, enter the name for each uploaded structure</li>
+                <li>Enter names of chemical structures in the box(es) in which you wish to search for a depiction</li>
+                <li>Click 'check' and follow the same procedures described above to edit/confirm the reaction</li>
+            </ul>
+            </br />
+            <p>If you encounter any formatting bugs, just refresh the page for now :)</p>
+        </div>
+        
 
         <form action='/'>
             <input type='submit' value='Home Page' />
