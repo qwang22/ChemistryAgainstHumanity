@@ -2,6 +2,8 @@ import { NextFunction, Request, Response, Router } from "express";
 import { BaseRoute } from "./route";
 const https = require("https");
 import mongo = require("mongodb");
+const json2csv = require('json2csv').parse;
+const fs = require('fs');
 
 /**
  * / route
@@ -51,12 +53,20 @@ export class IndexRoute extends BaseRoute {
             new IndexRoute().game(req, res, next);
         });
 
-	router.post("/addReaction", (req: Request, res: Response, next: NextFunction) => {
-	    new IndexRoute().addReaction(req, res, next);
-	});
+	    router.post("/addReaction", (req: Request, res: Response, next: NextFunction) => {
+	        new IndexRoute().addReaction(req, res, next);
+	    });
 	
-	router.post("/generateCards", (req: Request, res: Response, next: NextFunction) => {
+	    router.post("/generateCards", (req: Request, res: Response, next: NextFunction) => {
             new IndexRoute().generateCards(req, res, next);
+        });
+
+        router.post("/generateSolutions", (req: Request, res: Response, next: NextFunction) => {
+            new IndexRoute().generateSolutions(req, res, next);
+        });
+
+        router.post("/exportReactions", (req: Request, res: Response, next: NextFunction) => {
+            new IndexRoute().exportReactions(req, res, next);
         });
 
     }
@@ -104,6 +114,25 @@ export class IndexRoute extends BaseRoute {
 
         if (req.body.status === "pass") {
            options.status = "pass";
+           
+           var host = "mongodb://localhost:27017";
+           mongo.MongoClient.connect(host, function(err, db) {
+               if (err) throw err;
+               var dbo = db.db("chemistryagainsthumanity");
+
+               var user_entry = {
+                   onyen: req.body.onyen,
+                   fname: 'fname',
+                   lname: 'lname',
+                   points: 0,
+                   isAdmin: false
+               }
+
+               dbo.collection("users").insertOne(user_entry, function(err, res) {
+                   if (err) throw err;
+                   console.log("1 user added");
+               });
+           });
         } else {
             options.status = "fail";
         }
@@ -159,45 +188,39 @@ export class IndexRoute extends BaseRoute {
     public addReaction(req: Request, res: Response, next: NextFunction) {
         console.log(req.body)
 
-        //for storing to local db
         var host = "mongodb://localhost:27017";
-        //for storing to blade db
-        //var host = "mongodb://152.2.133.33:27017";
         mongo.MongoClient.connect(host, function(err, db) {
             if (err) throw err;
             var dbo = db.db("chemistryagainsthumanity");
 
-           var reaction_entry = {
-               reactant: req.body.reactant,
-               reagent: req.body.reagent,
-               product: req.body.product,
+            var reaction_entry = {
+               reactant: req.body.reactant.back,
+               reagent: req.body.reagent.back,
+               product: req.body.product.back,
                active: true
-           }
+            }
 
-           //console.log("reaction_entry = " + JSON.stringify(reaction_entry))
+            //console.log("reaction_entry = " + JSON.stringify(reaction_entry))
 
-           dbo.collection("reactions").insertOne(reaction_entry, function(err, res) {
+            dbo.collection("reactions").insertOne(reaction_entry, function(err, res) {
                if (err) throw err;
-               var rid = res['ops'][0]['_id'];
                console.log('1 reaction inserted into reactions table');
+            });
 
-               var cards_entry = new Array();
-               Object.keys(req.body).map(function(key) {
-                   var card_obj = {
-                       rid: rid,
-                       type: key,
-                       front: req.body[key]['front'],
-                       back: req.body[key]['back']
-                   }
-                   cards_entry.push(card_obj);
-                });
-                //console.log("cards_entry = " + cards_entry);
+            var cards_entry = new Array();
+            Object.keys(req.body).map(function(key) {
+                var card_obj = {
+                    front: req.body[key]['front'],
+                    back: req.body[key]['back']
+                }
+                cards_entry.push(card_obj);
+            });
+            //console.log("cards_entry = " + cards_entry);
 
-                dbo.collection("cards").insertMany(cards_entry, function(err, res) {
-                    if (err) throw err;
-                    console.log('3 cards inserted into cards table')
-                });
-           });
+            dbo.collection("cards").insertMany(cards_entry, function(err, res) {
+                if (err) throw err;
+                console.log('3 cards inserted into cards table');
+            });
             
         });
         var response = {status: "done"}
@@ -211,10 +234,40 @@ export class IndexRoute extends BaseRoute {
 
             dbo.collection("cards").find({}).toArray(function(err, res2) {
                if (err) throw err;
-               console.log(res2)
+               //console.log(res2);
                var response = JSON.stringify(res2);
                res.send(response);
             });
         });
+    }
+
+    public generateSolutions(req: Request, res: Response, next: NextFunction) {
+        mongo.MongoClient.connect("mongodb://localhost:27017", function(err, db) {
+            if (err) throw err;
+            var dbo = db.db("chemistryagainsthumanity");
+
+            dbo.collection("reactions").find({active:true}, {_id: 0, reactant: 1, "reagent": 1, "product": 1}).toArray(function(err, res2) {
+                if (err) throw err;
+                console.log(res2);
+                var response = JSON.stringify(res2);
+                res.send(response);
+            });
+        });
+    }
+
+    public exportReactions(req: Request, res: Response, next: NextFunction) {
+        mongo.MongoClient.connect("mongodb://localhost:27017", function(err, db) {
+            if (err) throw err;
+            var dbo = db.db("chemistryagainsthumanity");
+            dbo.collection("reactions").find({}).toArray(function(err, docs) {
+                var fields = ['_id', 'reactant', 'reagent', 'product', 'active'];
+                var data = json2csv({data: docs, fields: fields});
+                var path = 'dist/public/reactions.csv';
+                fs.writeFile(path, data, function(err, data) {
+                    if (err) throw err;
+                    res.download(path);
+                });
+            })
+        })
     }
 }
