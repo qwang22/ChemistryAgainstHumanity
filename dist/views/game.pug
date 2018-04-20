@@ -84,7 +84,7 @@ html
 
                     var user0 = {
                         onyen:"moy",
-                        fname:"Cheril",
+                        fname:"Cheryl",
                         lname:"Moy",
                         points: 11
                     }
@@ -115,7 +115,7 @@ html
                     }
                     var user5 = {
                         onyen:"extra1",
-                        fname:"Chemistry",
+                        fname:"Chem",
                         lname:"Student",
                         points: 6
                     }
@@ -126,9 +126,10 @@ html
 
                     for(i=0;i<=users.length;i++){
                         j=i+1;
-                        $(".leaderB").append($("<tr><th>"+ j +
-                        "</th><th>"+ users[i]["fname"] + " " + users[i]["lname"] +
-                        "</th><th>" + users[i]["points"] + "</th></tr>"));
+                        $(".leaderB").append($("<tr>" +
+                        "<th>" + j + "</th>" + "<th></th>" +
+                        "<th>" + users[i]["fname"] + " " + users[i]["lname"] + "</th>" + "<th></th>" +
+                        "<th>" + users[i]["points"] + "</th></tr>"));
                     }
 
                     var deck;
@@ -339,7 +340,7 @@ html
             <div class="lead">
                 //- <h1> Leaderboard here</h1>
                 <div class="close"> X </div>
-                <table class = leaderB>
+                <table class = "leaderB">
                 <tr>
                     <th>Spot<th>
                     <th>Name<th>
