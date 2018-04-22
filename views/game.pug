@@ -22,7 +22,7 @@ html
 
 
 
-                //Draft for Popup Instructions Functions
+                //Modal Popup Instructions Functions
                 $(function(){ 
                     $('.inst_button ').on('click',function(){
                         $('.inst').css({
@@ -49,7 +49,7 @@ html
                     });
                 });
 
-                //Leaderboard button: 
+                //Modal Leaderboard button: 
                 $(function(){ 
                     $('.lead_button').on('click',function(){
                         $('.lead').css({
@@ -243,15 +243,29 @@ html
         <div id='buttons'>
             <button class="inst_button" > Instructions </button>
             <button class="lead_button" > Leaderboard </button>
-            <button class="toggle"> Mode Toggle </button>
+            //- <button class="toggle"> Mode Toggle </button>
+            //- Instructions Code 
             <div class="inst">
-                <h1> Instructions here </h1>
+                //- <h1> Instructions Here </h1>
                 <div class="close"> X </div>
+                <div class="instructions">
+                    <h1> Instructions</h1>
+                    <p>Welcome to Chemistry Against Humanity, a fun way to practice and learn Organic Chemistry reactions! 
+                    <br><br>Objective: Clear the cards by creating reactions from the 4x4 grid. Your score reflects the number of reactions you correctly match!
+                    <br><br>How to Play:
+                    <ul>
+                        <li>Drag the cards down to their respective boxes. Be careful! Order of the cards matters! </li>
+                        <li>Press submit when you think your reaction is correct. If it is right, your score will increase by __. If wrong, your score will decrease by __ and you can clear the cards by pressing "Clear"</li>
+                        <li>New cards will populate the board after a correct reaction</li>
+                        <li>Continue to make reactions until the board is empty!</li>
+                    </ul>
+                    </p>
+                </div>
             </div>
+            //- Leaderboard Code
             <div class="lead">
-                //- <h1> Leaderboard here</h1>
                 <div class="close"> X </div>
-                <table class = leaderB>
+                    <table class = leaderB>
                 <tr>
                     <th>Spot<th>
                     <th>Name<th>
@@ -349,11 +363,17 @@ html
 
         <table id="div2" style="display: none;" ondrop="drop(event)" ondragover="allowDrop(event)">
             <tr>
-                <th class='sub_box' id="reactant"> </th>
+                <th class='sub_box' id="reactant">
+                    <p>REACTANT</p>
+                </th>
                 <th class='symbol' id="plus">+ </th>
-                <th class='sub_box' id="reagent"> </th>
+                <th class='sub_box' id="reagent"> 
+                    <p>REAGENT</p>
+                </th>
                 <th class='symbol' id="arrow">=</th>
-                <th class='sub_box' id="product"> </th>
+                <th class='sub_box' id="product"> 
+                    <p>PRODUCT</p>
+                </th>
             </tr>
         </table>
         <div id='submit' style="display: none;">
