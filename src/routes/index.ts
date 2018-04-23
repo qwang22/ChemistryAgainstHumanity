@@ -201,7 +201,7 @@ export class IndexRoute extends BaseRoute {
 
             //console.log("reaction_entry = " + JSON.stringify(reaction_entry))
 
-            dbo.collection("reactions_dummy").insertOne(reaction_entry, function(err, res) {
+            dbo.collection("reactions").insertOne(reaction_entry, function(err, res) {
                if (err) throw err;
                console.log('1 reaction inserted into reactions table');
             });
@@ -216,7 +216,7 @@ export class IndexRoute extends BaseRoute {
             });
             //console.log("cards_entry = " + cards_entry);
 
-            dbo.collection("cards_dummy").insertMany(cards_entry, function(err, res) {
+            dbo.collection("cards").insertMany(cards_entry, function(err, res) {
                 if (err) throw err;
                 console.log('3 cards inserted into cards table');
             });
@@ -231,7 +231,7 @@ export class IndexRoute extends BaseRoute {
             if (err) throw err;
             var dbo = db.db("chemistryagainsthumanity");
 
-            dbo.collection("cards_dummy").find({}).toArray(function(err, res2) {
+            dbo.collection("cards").find({}).toArray(function(err, res2) {
                if (err) throw err;
                //console.log(res2);
                var response = JSON.stringify(res2);
@@ -245,7 +245,7 @@ export class IndexRoute extends BaseRoute {
             if (err) throw err;
             var dbo = db.db("chemistryagainsthumanity");
 
-            dbo.collection("reactions_dummy").find({active:true}, {_id: 0, reactant: 1, "reagent": 1, "product": 1}).toArray(function(err, res2) {
+            dbo.collection("reactions").find({active:true}, {_id: 0, reactant: 1, "reagent": 1, "product": 1}).toArray(function(err, res2) {
                 if (err) throw err;
                 console.log(res2);
                 var response = JSON.stringify(res2);
@@ -258,7 +258,7 @@ export class IndexRoute extends BaseRoute {
         mongo.MongoClient.connect("mongodb://localhost:27017", function(err, db) {
             if (err) throw err;
             var dbo = db.db("chemistryagainsthumanity");
-            dbo.collection("reactions_dummy").find({}).toArray(function(err, docs) {
+            dbo.collection("reactions").find({}).toArray(function(err, docs) {
                 var fields = ['_id', 'reactant', 'reagent', 'product', 'active'];
                 var path = 'dist/public/reactions.csv';
                 fs.writeFile(path, JSON.stringify(docs), function(err, data) {
