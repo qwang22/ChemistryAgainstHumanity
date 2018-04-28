@@ -34,39 +34,73 @@ export class IndexRoute extends BaseRoute {
             new IndexRoute().index(req, res, next);
         });
 
-        router.post("/login", (req: Request, res: Response, next: NextFunction) => {
-            new IndexRoute().login(req, res, next);
-        });
+        // router.post("/login", (req: Request, res: Response, next: NextFunction) => {
+        //     new IndexRoute().login(req, res, next);
+        // });
         
         //add admin page to import reactions and get depictions
-        router.get("/admin", (req: Request, res: Response, next: NextFunction) => {
+        router.post("/admin", (req: Request, res: Response, next: NextFunction) => {
             new IndexRoute().admin(req, res, next);
         });
+
+        //if accessed through GET request or directly by URL
+        router.get("/admin", (req: Request, res: Response, next: NextFunction) => {
+            res.send("You either do not have permission to access this page, or you are trying to access it directly.  If you are an admin, please authenticate and try again.")
+        })
 
         // handles ajax request to get depictions
         router.post("/getImage", (req: Request, res: Response, next: NextFunction) => {
             new IndexRoute().getImage(req, res, next);
         });
         
+        //add game page route POST --> in class mode with leaderboard after user authentication
+        router.post("/game", (req: Request, res: Response, next: NextFunction) => {
+            //new IndexRoute().game(req, res, next);
+            new IndexRoute().login(req, res, next);
+        });
+
+        //GET --> practice mode, no leaderboard effect
         router.get("/game", (req: Request, res: Response, next: NextFunction) => {
             new IndexRoute().game(req, res, next);
         });
 
+        //insert reaction and cards to db
 	    router.post("/addReaction", (req: Request, res: Response, next: NextFunction) => {
 	        new IndexRoute().addReaction(req, res, next);
 	    });
-	
+    
+        //return 'deck' of cards from db for game use
 	    router.post("/generateCards", (req: Request, res: Response, next: NextFunction) => {
             new IndexRoute().generateCards(req, res, next);
         });
 
+        //return set of all reactions in db for solution checking
         router.post("/generateSolutions", (req: Request, res: Response, next: NextFunction) => {
             new IndexRoute().generateSolutions(req, res, next);
         });
 
-        router.post("/exportReactions", (req: Request, res: Response, next: NextFunction) => {
+        //export current reactions from db to csv file for download
+        router.get("/exportReactions", (req: Request, res: Response, next: NextFunction) => {
             new IndexRoute().exportReactions(req, res, next);
         });
+
+        //export users and points from db to csv file for download
+        router.get("/exportPoints", (req: Request, res: Response, next: NextFunction) => {
+            new IndexRoute().exportPoints(req, res, next);
+        });
+
+        //reset all user points to 0
+        router.get("/resetPoints", (req: Request, res: Response, next: NextFunction) => {
+            new IndexRoute().resetPoints(req, res, next);
+        });
+
+        router.get("/getLeaderboard", (req: Request, res: Response, next: NextFunction) => {
+            new IndexRoute().getLeaderboard(req, res, next);
+        });
+
+        router.post("/updateLeaderboard", (req: Request, res: Response, next: NextFunction) => {
+            new IndexRoute().updateLeaderboard(req, res, next);
+        })
 
     }
 
@@ -107,12 +141,25 @@ export class IndexRoute extends BaseRoute {
     public login(req: Request, res: Response, next: NextFunction) {
         // set custom title
         this.title = "Login";
-        // console.log(req);
 
         let options: any = {};
 
         if (req.body.status === "pass") {
            options.status = "pass";
+           options.user = req.body.onyen;
+
+           var isAdmin = false; 
+            if (req.body.onyen == "qianqian" 
+                || req.body.onyen == "youngjt" 
+                || req.body.onyen == "renfro18" 
+                || req.body.onyen == "csv17"
+                || req.body.onyen == "cmoy"
+                || req.body.onyen == "pozefsky") {
+                    isAdmin = true;
+                    options.isAdmin = true;
+           } else {
+               options.isAdmin = false;
+           }
            
            var host = "mongodb://localhost:27017";
            mongo.MongoClient.connect(host, function(err, db) {
@@ -121,23 +168,22 @@ export class IndexRoute extends BaseRoute {
 
                var user_entry = {
                    onyen: req.body.onyen,
-                   fname: 'fname',
-                   lname: 'lname',
                    points: 0,
-                   isAdmin: false
+                   isAdmin: isAdmin
                }
-
-               dbo.collection("users").insertOne(user_entry, function(err, res) {
-                   if (err) throw err;
-                   console.log("1 user added");
-               });
+                //insert if user not yet in table
+                dbo.collection("users").update({"onyen": req.body.onyen}, {"$setOnInsert": user_entry}, {upsert: true}, function(err, res) {
+                    if (err) throw err;
+                    //console.log("1 user added/updated");
+                });
            });
         } else {
             options.status = "fail";
         }
 
         // render template
-        this.render(req, res, "login", options);
+        //this.render(req, res, "login", options);
+        this.render(req, res, "game", options);
     }
     
     public admin(req: Request, res: Response, next: NextFunction) {
@@ -247,7 +293,6 @@ export class IndexRoute extends BaseRoute {
 
             dbo.collection("reactions").find({active:true}, {_id: 0, reactant: 1, "reagent": 1, "product": 1}).toArray(function(err, res2) {
                 if (err) throw err;
-                console.log(res2);
                 var response = JSON.stringify(res2);
                 res.send(response);
             });
@@ -259,13 +304,77 @@ export class IndexRoute extends BaseRoute {
             if (err) throw err;
             var dbo = db.db("chemistryagainsthumanity");
             dbo.collection("reactions").find({}).toArray(function(err, docs) {
-                var fields = ['_id', 'reactant', 'reagent', 'product', 'active'];
                 var path = 'dist/public/reactions.csv';
-                fs.writeFile(path, JSON.stringify(docs), function(err, data) {
+                var data = new Array();
+                data.push([" "]); //this is needed to properly align data, not sure why
+                data.push(["id", "reactant", "reagent", "product\n"]);
+                for (var i=0;i<docs.length;i++) {
+                    data.push([docs[i]['_id'], docs[i]['reactant'], docs[i]['reagent'], docs[i]['product'] + '\n']);
+                }
+                fs.writeFile(path, data, function(err, res2) {
                     if (err) throw err;
                     res.download(path);
                 });
             })
         })
+    }
+
+    public exportPoints(req: Request, res: Response, next: NextFunction) {
+        mongo.MongoClient.connect("mongodb://localhost:27017", function(err, db) {
+            if (err) throw err;
+            var dbo = db.db("chemistryagainsthumanity");
+            dbo.collection("users").find({}).toArray(function(err, docs) {
+                var path = 'dist/public/points.csv';
+                var data = new Array();
+                data.push([" "]); //this is needed to properly align data, not sure why
+                data.push(["onyen", "points\n"]);
+                for (var i=0;i<docs.length;i++) {
+                    data.push([docs[i]['onyen'], docs[i]['points'] + '\n']);
+                }
+                fs.writeFile(path, data, function(err, res2) {
+                    if (err) throw err;
+                    res.download(path);
+                });
+            });
+        });
+    }
+
+    public resetPoints(req: Request, res: Response, next: NextFunction) {
+        mongo.MongoClient.connect("mongodb://localhost:27017", function(err, db) {
+            if (err) throw err;
+            var dbo = db.db("chemistryagainsthumanity");
+            dbo.collection("users").updateMany({"points":{"$exists": true}}, {"$set": {"points": 0}}, function(err, res2) {
+                if (err) throw err;
+                var response = JSON.stringify(res2);
+                res.send(response);
+            });
+        });
+    }
+
+    public getLeaderboard(req: Request, res: Response, next: NextFunction) {
+        mongo.MongoClient.connect("mongodb://localhost:27017", function(err, db) {
+            if (err) throw err;
+            var dbo = db.db("chemistryagainsthumanity");
+            dbo.collection("users").find({}).sort({"points": -1}).toArray(function(err, res2) {
+                if (err) throw err;
+                var response = JSON.stringify(res2);
+                res.send(response);
+            });
+        });
+    }
+
+    public updateLeaderboard(req: Request, res: Response, next: NextFunction) {
+        console.log(req.body);
+        var onyenToUpdate = req.body['onyen'];
+        var points = parseFloat(req.body['points']);
+        mongo.MongoClient.connect("mongodb://localhost:27017", function(err, db) {
+            if (err) throw err;
+            var dbo = db.db("chemistryagainsthumanity");
+            dbo.collection("users").update({"onyen": onyenToUpdate}, {"$set": {"points": points}}, function(err, res2) {
+                if (err) throw err;
+                var response = JSON.stringify(res2);
+                res.send(response);
+            });
+        });
     }
 }

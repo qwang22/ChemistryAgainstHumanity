@@ -1,8 +1,14 @@
 html
   head
     title= title
-  body
-    h1= message
+    style
+        include css/index.css
+<body>
+
+    <div id='header'>
+        <img src="http://i68.tinypic.com/9bhxqg.png" alt="LOGO" width="50%" align="middle">
+    </div>
+    
     <form action="https://onyen.unc.edu/cgi-bin/unc_id/authenticator.pl" name="form1" method="POST">
 
         <input type="hidden" name="cookie" value="123-bc-398z-45">
@@ -22,23 +28,26 @@ html
         <!-- Do we want to get the PID for this person? -->
         <input type="hidden" name="getpid" value="0">
 
-        <input type="hidden" name="targetpass" value="http://dpbld09a.cs.unc.edu/login">
+        <input type="hidden" name="targetpass" value="http://localhost:8080/game">
         
         <input type="hidden" name="textpass" value="Login success. Click continue below to return back to the Chemistry Against Humanity Website.">
 
         <input type="hidden" name="locationfailtimeout" value="https://onyen.unc.edu/cgi-bin/unc_id/authenticator.pl">
 
-        <input type="hidden" name="targetfail" value="http://dpbld09a.cs.unc.edu">
+        <input type="hidden" name="targetfail" value="http://localhost:8080">
 
         <input type="hidden" name="textfail" value="Login failed. Your password or ONYEN were wrong. Go back and try logging in again.">
 
         <center>
-            <input type="submit" name="submit" value="Authenticate">
+            <input type="submit" name="submit" value="Authenticate" class="button">
         </center>
     </form>
-    <form action='admin'>
-        <input type='submit' value='Admin Page' />
+
+    <form action='/game' method='GET'>
+        <center>
+            <input type="submit" value="Practice Game" class="button" />
+        </center>
     </form>
-    <form action='game'>
-        <input type='submit' value='Game Page' />
-    </form>
+    //- <form action='/admin' method='POST'>
+    //-     <input type='submit' value='Admin Page' />
+    //- </form>

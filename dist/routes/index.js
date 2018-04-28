@@ -13,14 +13,17 @@ class IndexRoute extends route_1.BaseRoute {
         router.post("/", (req, res, next) => {
             new IndexRoute().index(req, res, next);
         });
-        router.post("/login", (req, res, next) => {
-            new IndexRoute().login(req, res, next);
+        router.post("/admin", (req, res, next) => {
+            new IndexRoute().admin(req, res, next);
         });
         router.get("/admin", (req, res, next) => {
-            new IndexRoute().admin(req, res, next);
+            res.send("You either do not have permission to access this page, or you are trying to access it directly.  If you are an admin, please authenticate and try again.");
         });
         router.post("/getImage", (req, res, next) => {
             new IndexRoute().getImage(req, res, next);
+        });
+        router.post("/game", (req, res, next) => {
+            new IndexRoute().login(req, res, next);
         });
         router.get("/game", (req, res, next) => {
             new IndexRoute().game(req, res, next);
@@ -34,8 +37,20 @@ class IndexRoute extends route_1.BaseRoute {
         router.post("/generateSolutions", (req, res, next) => {
             new IndexRoute().generateSolutions(req, res, next);
         });
-        router.post("/exportReactions", (req, res, next) => {
+        router.get("/exportReactions", (req, res, next) => {
             new IndexRoute().exportReactions(req, res, next);
+        });
+        router.get("/exportPoints", (req, res, next) => {
+            new IndexRoute().exportPoints(req, res, next);
+        });
+        router.get("/resetPoints", (req, res, next) => {
+            new IndexRoute().resetPoints(req, res, next);
+        });
+        router.get("/getLeaderboard", (req, res, next) => {
+            new IndexRoute().getLeaderboard(req, res, next);
+        });
+        router.post("/updateLeaderboard", (req, res, next) => {
+            new IndexRoute().updateLeaderboard(req, res, next);
         });
     }
     constructor() {
@@ -53,6 +68,20 @@ class IndexRoute extends route_1.BaseRoute {
         let options = {};
         if (req.body.status === "pass") {
             options.status = "pass";
+            options.user = req.body.onyen;
+            var isAdmin = false;
+            if (req.body.onyen == "qianqian"
+                || req.body.onyen == "youngjt"
+                || req.body.onyen == "renfro18"
+                || req.body.onyen == "csv17"
+                || req.body.onyen == "cmoy"
+                || req.body.onyen == "pozefsky") {
+                isAdmin = true;
+                options.isAdmin = true;
+            }
+            else {
+                options.isAdmin = false;
+            }
             var host = "mongodb://localhost:27017";
             mongo.MongoClient.connect(host, function (err, db) {
                 if (err)
@@ -60,22 +89,19 @@ class IndexRoute extends route_1.BaseRoute {
                 var dbo = db.db("chemistryagainsthumanity");
                 var user_entry = {
                     onyen: req.body.onyen,
-                    fname: 'fname',
-                    lname: 'lname',
                     points: 0,
-                    isAdmin: false
+                    isAdmin: isAdmin
                 };
-                dbo.collection("users").insertOne(user_entry, function (err, res) {
+                dbo.collection("users").update({ "onyen": req.body.onyen }, { "$setOnInsert": user_entry }, { upsert: true }, function (err, res) {
                     if (err)
                         throw err;
-                    console.log("1 user added");
                 });
             });
         }
         else {
             options.status = "fail";
         }
-        this.render(req, res, "login", options);
+        this.render(req, res, "game", options);
     }
     admin(req, res, next) {
         let options = {
@@ -121,7 +147,7 @@ class IndexRoute extends route_1.BaseRoute {
                 product: req.body.product.back,
                 active: true
             };
-            dbo.collection("reactions_dummy").insertOne(reaction_entry, function (err, res) {
+            dbo.collection("reactions").insertOne(reaction_entry, function (err, res) {
                 if (err)
                     throw err;
                 console.log('1 reaction inserted into reactions table');
@@ -134,7 +160,7 @@ class IndexRoute extends route_1.BaseRoute {
                 };
                 cards_entry.push(card_obj);
             });
-            dbo.collection("cards_dummy").insertMany(cards_entry, function (err, res) {
+            dbo.collection("cards").insertMany(cards_entry, function (err, res) {
                 if (err)
                     throw err;
                 console.log('3 cards inserted into cards table');
@@ -148,7 +174,7 @@ class IndexRoute extends route_1.BaseRoute {
             if (err)
                 throw err;
             var dbo = db.db("chemistryagainsthumanity");
-            dbo.collection("cards_dummy").find({}).toArray(function (err, res2) {
+            dbo.collection("cards").find({}).toArray(function (err, res2) {
                 if (err)
                     throw err;
                 var response = JSON.stringify(res2);
@@ -161,10 +187,9 @@ class IndexRoute extends route_1.BaseRoute {
             if (err)
                 throw err;
             var dbo = db.db("chemistryagainsthumanity");
-            dbo.collection("reactions_dummy").find({ active: true }, { _id: 0, reactant: 1, "reagent": 1, "product": 1 }).toArray(function (err, res2) {
+            dbo.collection("reactions").find({ active: true }, { _id: 0, reactant: 1, "reagent": 1, "product": 1 }).toArray(function (err, res2) {
                 if (err)
                     throw err;
-                console.log(res2);
                 var response = JSON.stringify(res2);
                 res.send(response);
             });
@@ -175,14 +200,82 @@ class IndexRoute extends route_1.BaseRoute {
             if (err)
                 throw err;
             var dbo = db.db("chemistryagainsthumanity");
-            dbo.collection("reactions_dummy").find({}).toArray(function (err, docs) {
-                var fields = ['_id', 'reactant', 'reagent', 'product', 'active'];
+            dbo.collection("reactions").find({}).toArray(function (err, docs) {
                 var path = 'dist/public/reactions.csv';
-                fs.writeFile(path, JSON.stringify(docs), function (err, data) {
+                var data = new Array();
+                data.push([" "]);
+                data.push(["id", "reactant", "reagent", "product\n"]);
+                for (var i = 0; i < docs.length; i++) {
+                    data.push([docs[i]['_id'], docs[i]['reactant'], docs[i]['reagent'], docs[i]['product'] + '\n']);
+                }
+                fs.writeFile(path, data, function (err, res2) {
                     if (err)
                         throw err;
                     res.download(path);
                 });
+            });
+        });
+    }
+    exportPoints(req, res, next) {
+        mongo.MongoClient.connect("mongodb://localhost:27017", function (err, db) {
+            if (err)
+                throw err;
+            var dbo = db.db("chemistryagainsthumanity");
+            dbo.collection("users").find({}).toArray(function (err, docs) {
+                var path = 'dist/public/points.csv';
+                var data = new Array();
+                data.push([" "]);
+                data.push(["onyen", "points\n"]);
+                for (var i = 0; i < docs.length; i++) {
+                    data.push([docs[i]['onyen'], docs[i]['points'] + '\n']);
+                }
+                fs.writeFile(path, data, function (err, res2) {
+                    if (err)
+                        throw err;
+                    res.download(path);
+                });
+            });
+        });
+    }
+    resetPoints(req, res, next) {
+        mongo.MongoClient.connect("mongodb://localhost:27017", function (err, db) {
+            if (err)
+                throw err;
+            var dbo = db.db("chemistryagainsthumanity");
+            dbo.collection("users").updateMany({ "points": { "$exists": true } }, { "$set": { "points": 0 } }, function (err, res2) {
+                if (err)
+                    throw err;
+                var response = JSON.stringify(res2);
+                res.send(response);
+            });
+        });
+    }
+    getLeaderboard(req, res, next) {
+        mongo.MongoClient.connect("mongodb://localhost:27017", function (err, db) {
+            if (err)
+                throw err;
+            var dbo = db.db("chemistryagainsthumanity");
+            dbo.collection("users").find({}).sort({ "points": -1 }).toArray(function (err, res2) {
+                if (err)
+                    throw err;
+                var response = JSON.stringify(res2);
+                res.send(response);
+            });
+        });
+    }
+    updateLeaderboard(req, res, next) {
+        console.log(req.body);
+        var onyenToUpdate = req.body['onyen'];
+        var points = parseFloat(req.body['points']);
+        mongo.MongoClient.connect("mongodb://localhost:27017", function (err, db) {
+            if (err)
+                throw err;
+            var dbo = db.db("chemistryagainsthumanity");
+            dbo.collection("users").update({ "onyen": onyenToUpdate }, { "$set": { "points": points } }, function (err, res2) {
+                if (err)
+                    throw err;
+                var response = JSON.stringify(res2);
+                res.send(response);
             });
         });
     }
