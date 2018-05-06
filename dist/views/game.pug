@@ -6,6 +6,7 @@ html
         script
             include js/jquery-latest.min.js
             include js/game.js
+        script(src="https://code.jquery.com/ui/1.12.1/jquery-ui.js")
         script(src='https://cdn.rawgit.com/nnattawat/flip/master/dist/jquery.flip.min.js')
     body
         h1(id='username')=user
@@ -53,62 +54,31 @@ html
 
         <button id='start_game'>Start Game</button>
 
-        <table id='div1' style='display:none;' ondrop='drop(event)' ondragover='allowDrop(event)'>
+        <table id='div1' style='display:none;'>
             <tr>
-                <th id='r1c1'>
-                    <div class='card'><div class='front'></div><div class='back'></div></div>
-                </th>
-                <th id='r1c2'>
-                    <div class='card'><div class='front'></div><div class='back'></div></div>
-                </th>
-                <th id='r1c3'>
-                    <div class='card'><div class='front'></div><div class='back'></div></div>
-                </th>
-                <th id='r1c4'>
-                    <div class='card'><div class='front'></div><div class='back'></div></div>
-                </th>
+                <th id='r1c1' class='droppable'></th>
+                <th id='r1c2' class='droppable'></th>
+                <th id='r1c3' class='droppable'></th>
+                <th id='r1c4' class='droppable'></th>
             </tr>
             <tr>
-                <th id='r2c1'>
-                    <div class='card'><div class='front'></div><div class='back'></div></div>
+                <th id='r2c1' class='droppable'>
                 </th>
-                <th id='r2c2'>
-                    <div class='card'><div class='front'></div><div class='back'></div></div>
-                </th>
-                <th id='r2c3'>
-                    <div class='card'><div class='front'></div><div class='back'></div></div>
-                </th>
-                <th id='r2c4'>
-                    <div class='card'><div class='front'></div><div class='back'></div></div>
-                </th>
+                <th id='r2c2' class='droppable'></th>
+                <th id='r2c3' class='droppable'></th>
+                <th id='r2c4' class='droppable'></th>
             </tr>
             <tr>
-                <th id='r3c1'>
-                    <div class='card'><div class='front'></div><div class='back'></div></div>
-                </th>
-                <th id='r3c2'>
-                    <div class='card'><div class='front'></div><div class='back'></div></div>
-                </th>
-                <th id='r3c3'>
-                    <div class='card'><div class='front'></div><div class='back'></div></div>
-                </th>
-                <th id='r3c4'>
-                    <div class='card'><div class='front'></div><div class='back'></div></div>
-                </th>
+                <th id='r3c1' class='droppable'></th>
+                <th id='r3c2' class='droppable'></th>
+                <th id='r3c3' class='droppable'></th>
+                <th id='r3c4' class='droppable'></th>
             </tr>
             <tr>
-                <th id='r4c1'>
-                    <div class='card'><div class='front'></div><div class='back'></div></div>
-                </th>
-                <th id='r4c2'>
-                    <div class='card'><div class='front'></div><div class='back'></div></div>
-                </th>
-                <th id='r4c3'>
-                    <div class='card'><div class='front'></div><div class='back'></div></div>
-                </th>
-                <th id='r4c4'>
-                    <div class='card'><div class='front'></div><div class='back'></div></div>
-                </th>
+                <th id='r4c1' class='droppable'></th>
+                <th id='r4c2' class='droppable'></th>
+                <th id='r4c3' class='droppable'></th>
+                <th id='r4c4' class='droppable'></th>
             </tr>
         </table>
         <table id="labels" style="display: none;"> 
@@ -128,22 +98,19 @@ html
                 </th>
             </tr>
         </table>
-        <table id="div2" style="display: none;" ondrop="drop(event)" ondragover="allowDrop(event)">
+
+        <table id="div2" style="display: none;">
             <tr>
-                <th class='sub_box' id="reactant">
-                </th>
+                <th class='sub_box droppable' id="reactant"></th>
                 <th class='symbol' id="plus">+ </th>
-                <th class='sub_box' id="reagent"> 
-                </th>
+                <th class='sub_box droppable' id="reagent"></th>
                 <th class='symbol' id="arrow">=</th>
-                <th class='sub_box' id="product"> 
-                </th>
+                <th class='sub_box droppable' id="product"></th>
             </tr>
         </table>
         <div id='submit' style="display: none;">
             <button id='check'>Submit</button>
             <button id='clear_answers'>Clear</button>
-            //-<button class='submit' id='check'>Submit</button>
         </div>
         <div id="score"></div>
         <div id="result"></div>

@@ -1,19 +1,3 @@
-function allowDrop(ev) {
-    ev.preventDefault();
-}
-
-function drag(ev) {
-    ev.dataTransfer.setData("text", ev.target.id);
-}
-
-function drop(ev) {
-    ev.preventDefault();
-    var data = ev.dataTransfer.getData("text");
-    ev.target.appendChild(document.getElementById(data));
-}
-
-
-
 //Modal Popup Instructions Functions
 $(function(){ 
     $('.inst_button ').on('click',function(){
@@ -79,7 +63,8 @@ $(document).ready(function() {
     var gameOver = false;
     var practiceMode;
 
-    //if user is logged in
+
+    //if user is logged in --> in-class mode
     if ($('#username').html().length > 0) {
         practiceMode = false;
     } else {
@@ -90,15 +75,59 @@ $(document).ready(function() {
     c.flip({axis:'y', trigger:'click'});
 
     let c1 = $(".card1");
-      c.flip({axis:'y', trigger:'click'});
-    //test 2nd column 
+    c.flip({axis:'y', trigger:'click'});
+
+
+    var dragAndDrop = function() {
+        $(".card").draggable({
+            revert : function(event, ui) {
+                // on older version of jQuery use "draggable"
+                // $(this).data("draggable")
+                // on 2.x versions of jQuery use "ui-draggable"
+                // $(this).data("ui-draggable")
+                $(this).data("uiDraggable").originalPosition = {
+                    top : 0,
+                    left : 0
+                };
+                return !event;
+            }
+        });
+    
+        $(".droppable").droppable({
+            drop: function(event, ui) {
+                let numOfChildren = $(this).children().length;
+
+                if (numOfChildren > 0) {
+                    ui.draggable.css("top", 0).css("left", 0);
+                    return;
+                }
+
+                ui.draggable.detach().appendTo($(this));
+                $(this).data("uiDroppable").originalPosition = {
+                    top: 0,
+                    down: 0
+                };
+                
+                ui.draggable.css("top", 0).css("left", 0);
+            }
+        });
+    }
 
     var getOriginalPosition = function() {
-        $('#div1 img').each( function() {
+        $('#div1 .card').each( function() {
             //original position = row#column#
             var op = $(this).parent().closest('th').attr('id');
             $(this).attr('data-op', op);
         });
+    }
+
+    var returnToOriginalPosition = function() {
+        //returns cards to previous positions (row#column#)
+        $('#div2 .card').each( function() {
+            $('#' + $(this).attr('data-op')).append($(this));
+        });
+        //initialize buttons
+        $('#result').empty();
     }
 
     var shuffle = function(deck) {
@@ -128,42 +157,15 @@ $(document).ready(function() {
     }
 
     var makeCard = function(card) {
-        return $("<img id=" + card['_id'] + " src=" + card['front'] + 
-                " alt='" +card['back'] + "' draggable='true' ondragstart='drag(event)'>");
-    }
-
-    //should use this function, but cards css is not applied
-    var makeCard2 = function(card) {
         return $("<div class='card'>" + 
                     "<div class='front'>" + 
-                        "<img id=" + card['_id'] + " data-rid=" + card['rid'] + 
-                        " data-type=" + card['type'] + " src=" + card['front'] + 
-                        " alt=" + card['back'] + " draggable='true' ondragstart='drag(event)'>" + 
+                        "<img id=" + card['_id'] + " src=" + card['front'] + 
+                        " alt='" + card['back'] + "'>" + 
                     "</div>" +
                     "<div class='back'>" + 
                         "<p>" + card['back'] + "</p>" + 
                     "</div>" + 
                 "</div>");
-    }
-
-    //update UI with cards
-    var updateGameboard = function() {
-        var row_num = 1;
-        var col_num = 1;
-        for (var i = 0;i < 16;i++) {
-            //table_pos = r#c#
-            var table_pos = 'r' + row_num + 'c' + col_num;
-            //$('#div1 th#' + table_pos).append(makeCard2(deck[i]));
-            $('#div1 th#' + table_pos + ' .card .front').append(makeCard(deck[i]));
-            $('#div1 th#' + table_pos + ' .card .back').append($("<p>" + deck[i]['back'] + "</p>"));
-            col_num++;
-            if (col_num == 5) {
-                col_num = 1;
-                row_num++;
-            }
-        }
-        getOriginalPosition();
-        console.log(deck.slice(0,16));
     }
 
     var initializeGame = function() {
@@ -210,12 +212,49 @@ $(document).ready(function() {
                 if (solutionExists(deck.slice(0,16))) {
                     console.log("solutionExists", solutionExists(deck.slice(0,16)));
                     handleDuplicates(deck.slice(0,16));
-                    updateGameboard();
+                    initializeGameboardUI();
                 }
 
             }
         });
 
+    }
+
+    //update UI with cards
+    var initializeGameboardUI = function() {
+        var row_num = 1;
+        var col_num = 1;
+        for (var i = 0;i < 16;i++) {
+            //table_pos = r#c#
+            var table_pos = 'r' + row_num + 'c' + col_num;
+            $('#div1 th#' + table_pos).append(makeCard(deck[i]));
+            col_num++;
+            if (col_num == 5) {
+                col_num = 1;
+                row_num++;
+            }
+        }
+        getOriginalPosition();
+        $('.card').flip();
+        dragAndDrop();
+        console.log(deck.slice(0,16));
+    }
+
+    var updateGameboardUI = function(newCards) {
+        var j = 0;
+        if (typeof(newCards) != "undefined") {
+            $('#div2 .card').each( function() {
+                if (j < newCards.length) {
+                    $('#' + $(this).attr('data-op')).append(makeCard(newCards[j]));
+                j++;
+                }
+            });
+            $('.card').flip();
+            dragAndDrop();
+            getOriginalPosition();
+        }
+        $('#div2 .sub_box').empty();
+        $('#result').empty()
     }
 
     //accepts JSON obj of cards {id:..., front:..., back:...}
@@ -264,9 +303,9 @@ $(document).ready(function() {
         $('#score').empty();
 
         var answer = {
-            reactant: $('#reactant').children('img').attr('alt'),
-            reagent: $('#reagent').children('img').attr('alt'),
-            product: $('#product').children('img').attr('alt')
+            reactant: $('#reactant').find('img').attr('alt'),
+            reagent: $('#reagent').find('img').attr('alt'),
+            product: $('#product').find('img').attr('alt')
         }
 
         // if correct
@@ -277,39 +316,14 @@ $(document).ready(function() {
             //draw new cards to replace
             var newCards = drawCards(3);
             console.log("newCards", newCards);
-            var j = 0;
-            //append new cards to grid and clear old cards
-            setTimeout(function() {
-                if (typeof(newCards) != "undefined") {
-                    $('#div2 img').each( function() {
-                        $('#' + $(this).attr('data-op') + ' .card .back').empty();
-                        if (j < newCards.length) {
-                            //$('#' + $(this).attr('data-op')).append(makeCard2(newCards[j]));
-                            $('#' + $(this).attr('data-op') + ' .card .front').append(makeCard(newCards[j]));
-                            // $('#' + $(this).attr('data-op') + ' .card .back').empty();
-                            $('#' + $(this).attr('data-op') + ' .card .back').append($("<p>" + newCards[j]['back'] + "</p>"));
-                        j++;
-                        }
-                    });
-                    getOriginalPosition();
-                }
-                $('#div2 .sub_box').empty();
-                $('#result').empty()}, 1500);
+            //append new cards to grid
+            setTimeout(updateGameboardUI(newCards), 1500);
         } else {
             score = score - 0.5;
             $('#score').append("<p>Score: "+score+"</p>");
             $('#result').append("<p>Incorrect</p>");
             //$('#clear_answers').show();
         }
-    }
-
-    var returnToOriginalPosition = function() {
-        //returns cards to previous positions (row#column#)
-        $('#div2 img').each( function() {
-            $('#' + $(this).attr('data-op') + ' .front').append($(this));
-        });
-        //initialize buttons
-        $('#result').empty();
     }
 
     var checkAnswer = function(answer) {
