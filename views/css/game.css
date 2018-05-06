@@ -261,7 +261,7 @@ p{
 .sub_box{
     border: dashed;
     border-color: #24C6DC;
-    padding: 15px;
+    /*padding: 15px;*/
     height: 75px;
     width: 25%;
  

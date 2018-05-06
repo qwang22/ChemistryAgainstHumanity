@@ -107,6 +107,7 @@ $(document).ready(function() {
                     top: 0,
                     down: 0
                 };
+                
                 ui.draggable.css("top", 0).css("left", 0);
             }
         });

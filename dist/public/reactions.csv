@@ -1,5 +1,11 @@
  ,id,reactant,reagent,product
-,5adf50fe6bed0767c69495de,acetate,excess ch3oh hcl,cyclopropane
-,5adf51136bed0767c69495e2,butyric acid,thionyl chloride,butyryl chloride
-,5adf51226bed0767c69495e6,a1,a2,a3
-,5adf5378ae0b57685877b6df,c1,c2,c3
+,5ae1fb1df7ffbb2b70e906a6,butanal,naoh_0,2-ethyl-3-hydroxyhexanal
+,5ae1fc21f7ffbb2b70e906aa,butanal,1. nabh4 2. h3o,1-butanol
+,5ae1fc43f7ffbb2b70e906ab,acetone,CH3OH,2,2-dimethoxypropane
+,5ae1fe16f7ffbb2b70e906b2,methyl butyrate,1. naoh 2. h3o,butyric acid
+,5ae1fe33f7ffbb2b70e906b3,1-butanol,pyridinium chlorochromate,butanal
+,5ae1ff55f71ea67c75c760e7,butyric acid,thionyl chloride,butyryl chloride
+,5ae207dff7ffbb2b70e906b7,toluene,hno3, h2so4,1-methyl-4-nitrobenzene
+,5ae20872f7ffbb2b70e906be,benzene,br2, feb,bromobenzene
+,5ae2153a9cea93a84c185968,methyl ethylene oxide,reagent,2-butanol
+,5ae215dc9cea93a84c18596d,dimethyl malonate,test,butyric acid
